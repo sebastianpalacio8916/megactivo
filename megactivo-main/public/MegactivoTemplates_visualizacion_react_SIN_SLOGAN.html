@@ -1,0 +1,57 @@
+<!doctype html><html lang="es"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Vista React Megactivo sin slogan</title><style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto:wght@400;500;600&family=Roboto+Slab:wght@400;500&display=swap');
+:root { --megactivo-dark:#0F393B; --megactivo-primary:#6EC1E4; --megactivo-secondary:#54595F; --megactivo-text:#7A7A7A; --megactivo-accent:#61CE70; --megactivo-body:#333333; --megactivo-white:#FFFFFF; --megactivo-light-bg:#EAF4F4; }
+* { box-sizing:border-box; } html,body,#root { min-height:100%; margin:0; } body { background:linear-gradient(135deg,#f7fbfb 0%,#eef7f8 100%); color:var(--megactivo-body); font-family:'Poppins',sans-serif; font-size:15px; line-height:1.7; font-weight:400; }
+.app-shell { width:min(1120px,calc(100% - 32px)); margin:0 auto; padding:40px 0 56px; } .hero { background:var(--megactivo-dark); border-radius:22px; padding:32px 36px; margin-bottom:28px; color:#fff; box-shadow:0 20px 60px rgba(15,57,59,.16); } .eyebrow { margin:0 0 8px; color:var(--megactivo-accent); font-family:'Roboto',sans-serif; font-size:13px; font-weight:600; letter-spacing:2px; text-transform:uppercase; } .hero h1 { margin:0; color:#fff; font-family:'Roboto',sans-serif; font-size:clamp(2rem,5vw,3.2rem); line-height:1.1; font-weight:600; } .hero p:last-child { max-width:760px; margin:14px 0 0; color:rgba(255,255,255,.78); } .preview-card { background:rgba(255,255,255,.82); border:1px solid rgba(15,57,59,.1); border-radius:24px; padding:32px; box-shadow:0 18px 50px rgba(15,57,59,.1); } .loader { width:min(900px,calc(100% - 32px)); margin:40px auto; background:#fff; border:1px solid rgba(15,57,59,.12); border-radius:18px; padding:24px; font-family:'Poppins',sans-serif; } .loader h1 { color:#0F393B; margin:0 0 8px; font-family:'Roboto',sans-serif; } .error { border-left:5px solid #cf2e2e; } .ok { border-left:5px solid #61CE70; } @media (max-width:640px) { .app-shell { width:min(100% - 20px,1120px); padding:20px 0 32px; } .hero,.preview-card { padding:22px; border-radius:18px; } }
+</style></head><body><div id="root"><div class="loader ok"><h1>Cargando vista React</h1><p>Si esta pantalla no cambia, la red está bloqueando React o Babel desde CDN.</p></div></div><script>
+const APP_SOURCE = "const { useState } = React;\nconst B = {\n  dark: \"#0F393B\",\n  primary: \"#6EC1E4\",\n  accent: \"#61CE70\",\n  secondary: \"#54595F\",\n  text: \"#7A7A7A\",\n  body: \"#333333\",\n  white: \"#FFFFFF\",\n  lightBg: \"#EAF4F4\",\n};\n\nconst T = {\n  bodyFont: \"'Poppins', sans-serif\",\n  primaryFont: \"'Roboto', sans-serif\",\n  secondaryFont: \"'Roboto Slab', serif\",\n  bodySize: 15,\n  smallSize: 13,\n  microSize: 11,\n  titleSize: 20,\n  titleLargeSize: 22,\n  bodyLineHeight: 1.7,\n  titleLineHeight: 1.35,\n  textWeight: 400,\n  accentWeight: 500,\n  titleWeight: 600,\n};\n\nconst LOGOS = {\n  mark: \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACRCAYAAAAsGjEdAAAUG0lEQVR4nO2deXRUVZ7Hv7/7KpUNCLKJLILYruO4xdNEIQmBoI7YR2ZGZro9rQ0mYDsz3aft42zHngbsVruPZ3S2RoWggriBWztqO509YWsEVFRAu9lXwxZC9qp3f/NHVWEl1F7vvXtfhc85CaRS795vqr517333/u7vEmziweapF/i6MZIEjZBSeoVBzCaOVM1c+5VddZ6nL/Oqp07yCDFNgi8GAILoAMtjUuAYm7zjhZlrd6dbB6UvM0Dl/5UVSoPLBXEpmKcS0eBoz2XmPzBzLYFXnDeUtdxfM3W2gJgNYBoRTYj1XCnlQSKqJsHvL5ve/GYq9aVloDmr53iHDG/5KZjmC+JJqZTBzE3MvGT5zObX09EykJnbWDze48cDYKogotGplCFN7iaDHxs7vfnxxQSZ6HWpGWghi7lTZs3OMjpScm0kmHkfCP9UNaNptVVlZjoL6ktHSJMfJaIHrSrT7+PeI7t8Uz/8+w0fJfL8pA1UunrhoIsLtn6W42mbmLS6BJDA2909uXNfvuPDNjvKzxQqakpmEvAKEY2wo/yju8z1mzd3zTyydEtnrOclbqA5bNx5z8+nXTSkqSZtdXGQ0rOvF7j1pZm158dHEaisLf4ZQfzC7np6OqR/xyZ5/Ue/XPdFtOckbKBZby1eOaag7l5rpMVHSqNbCk/RCzN+/6lTdbqBypqSJVZ2WYlwZJd88L0Fzc9G+l1CBrp9za93jB/2wZXWyoqPX2aZXZ0jxr5212tfO123jlTWltxHoBUq6j68y3zk/QVrH+//uIh34ZSXV3+qwjwA4BE+w+PtPXjtkyvzAbZsysGNVNRMvlCVeQBgzKXGY99ZOvXO/o/HMBDTjStr37niwqXX2iksHrneE54xk44cwkIYKnUohUGE7G2qZQwZQW9evbBoWPhjkQ20kMWEJW23XzVy2V0G+RwRF4vxQz8ouGHC+mYsrPeo1qKCirrihUQ0SrWOvALhHTfUUx3+WGQDLSY5ZkjDB3neI44IS4Trx/2iaNLoq3860LqyBdWFBQJioWodISZca9xY9G9FpaGfIxpo4v+07Zs0/FV2TlZ8PEYXrhz13K8u+U37n2Mhxx27ZQqS8reo1tCfEWOzXgz9v+8bwUzjnukYe1FBw8V53iPafdLHDq2lC/I/HjBLHvNriv+BiC5VraM/F10mJt70cFE50N9AROwx/X8aPaRBq9YnnBvGLr7yijGH5mZ6V1axvmgYSPy3ah3RuOAiz8NAuIGYadJzJwsMozdnxKAt2r45Qvhx5einnoG2FrcABlGnd5NqGbEoGE1TgHADEbHZa7w7LG9Lwiuxqhg1aIu3+NUVq1TrsIv5tSU/1rHrCueC0WLQDY/cPKFPF0ZClAzP/0Tb1iecK0a9eE/Ryt9+S7UOq6momXwhiP5DtY5EGDlCfDdoIKaLl7QWgljmeo6rVZUgRIyJw1evy6ixUGDCcIdqGYmSO9i4KmAgBgR7ngBDej2nXPOGDM45OGr2Ow/9PFNu6+fXljxKRBeo1pEo3hyMC7zwRMyQ5SAIr6dVraokGTn440XzJv/FcNU60uUH9aWjQfQz1TqSQQg55OwnlwI2Io/RrlJTSphG1hawdfHdjsOgLJO3q5aRNIJyBABMePrUxMCrT/CZQ1VKSolsT9v4ipppP1KtI1Uqa0sec1PXFUJKahOYwwblGLdJwA8i6vbZEiFpO0Lwfz5QUzRWtY5kqWwsvoSI/lW1jlQw/XxKYDWkNOlWBGfmenzuHU74OGfDnNVz3BP2wSD4yH1dVxBfD1oEiJgIf0YgAoBO30WqdaWMIXj80GFfP6JaR6JU1Jb8mohyVOtIldMtcpsAMzHkxNB8yonOGxXLShOixfd9UKb1LC4AzK+95VJB9I+qdaTDHzdgi8AaCAHyhu5iTnddDb+Zp\",\n  horizontal: \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAq0AAACsCAYAAABRn5UnAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAG0GlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgOS4wLWMwMDAgMTM3LmRhNGE3ZTUsIDIwMjIvMTEvMjctMDk6MzU6MDMgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCAyNC4xIChXaW5kb3dzKSIgeG1wOkNyZWF0ZURhdGU9IjIwMjMtMDItMTdUMTA6NDk6MTUtMDU6MDAiIHhtcDpNb2RpZnlEYXRlPSIyMDIzLTAyLTE3VDEwOjUwOjMzLTA1OjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIzLTAyLTE3VDEwOjUwOjMzLTA1OjAwIiBkYzpmb3JtYXQ9ImltYWdlL3BuZyIgcGhvdG9zaG9wOkNvbG9yTW9kZT0iMyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDplYjA5MmVhZC02NTM4LWMxNDgtODQwOS0wZjA1OGI5Njg3NTIiIHhtcE1NOkRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDplNjE4M2FjYS05ODg3LWFiNDQtYjcxMi1mZGEwMGFiMmY1MjQiIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1NzRlYmVjOS1kNzg4LWFlNGQtOTNlZi02MzFmZDA2MDc2YWEiPiA8cGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8cmRmOkJhZz4gPHJkZjpsaT5hZG9iZTpkb2NpZDpwaG90b3Nob3A6OWU1MTYwMjEtNDRjNy03NjRiLTg2Y2YtYTdjZTdlNzEwZjRiPC9yZGY6bGk+IDwvcmRmOkJhZz4gPC9waG90b3Nob3A6RG9jdW1lbnRBbmNlc3RvcnM+IDx4bXBNTTpIaXN0b3J5PiA8cmRmOlNlcT4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImNyZWF0ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NTc0ZWJlYzktZDc4OC1hZTRkLTkzZWYtNjMxZmQwNjA3NmFhIiBzdEV2dDp3aGVuPSIyMDIzLTAyLTE3VDEwOjQ5OjE1LTA1OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgMjQuMSAoV2luZG93cykiLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImNvbnZlcnRlZCIgc3RFdnQ6cGFyYW1ldGVycz0iZnJvbSBhcHBsaWNhdGl [truncated]\"\n};\n\nconst libs = { react:['https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js','https://unpkg.com/react@18/umd/react.production.min.js'], reactdom:['https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js','https://unpkg.com/react-dom@18/umd/react-dom.production.min.js'], babel:['https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js','https://unpkg.com/@babel/standalone/babel.min.js'] };\nfunction showError(title,detail) { document.getElementById('root').innerHTML = `<div class=\"loader error\"><h1>${title}</h1><p>${detail}</p></div>`; }\nfunction loadOne(urls,globalName) { return new Promise((resolve,reject)=>{ let i=0; const tryNext=()=>{ if(window[globalName]) return resolve(); if(i>=urls.length) return reject(new Error('No cargó '+globalName)); const s=document.createElement('script'); s.src=urls[i++]; s.crossOrigin='anonymous'; s.onload=()=>window[globalName]?resolve():tryNext(); s.onerror=tryNext; document.head.appendChild(s); }; tryNext(); }); }\n(async function boot() { try { await loadOne(libs.react,'React'); await loadOne(libs.reactdom,'ReactDOM'); await loadOne(libs.babel,'Babel'); const compiled=Babel.transform(APP_SOURCE,{presets:['react']}).code; (0,eval)(compiled); } catch(err) { console.error(err); showError('No se pudo cargar React en este HTML', String(err && err.message ? err.message : err)); } })();";
+
+const libs = { react:['https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js','https://unpkg.com/react@18/umd/react.production.min.js'], reactdom:['https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js','https://unpkg.com/react-dom@18/umd/react-dom.production.min.js'], babel:['https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js','https://unpkg.com/@babel/standalone/babel.min.js'] };
+function showError(title,detail) { document.getElementById('root').innerHTML = `<div class="loader error"><h1>${title}</h1><p>${detail}</p></div>`; }
+function loadOne(urls,globalName) { return new Promise((resolve,reject)=>{ let i=0; const tryNext=()=>{ if(window[globalName]) return resolve(); if(i>=urls.length) return reject(new Error('No cargó '+globalName)); const s=document.createElement('script'); s.src=urls[i++]; s.crossOrigin='anonymous'; s.onload=()=>window[globalName]?resolve():tryNext(); s.onerror=tryNext; document.head.appendChild(s); }; tryNext(); }); }
+
+async function boot() {
+	try {
+		await loadOne(libs.react, 'React');
+		await loadOne(libs.reactdom, 'ReactDOM');
+		await loadOne(libs.babel, 'Babel');
+		// libs cargadas; ahora esperamos mensajes para renderizar con datos inyectados
+		// Si ningún mensaje llega, podemos renderizar la versión por defecto si APP_SOURCE contiene SAMPLE.
+		window.__megactivo_libs_ready = true;
+	} catch (err) {
+		console.error(err);
+		showError('No se pudo cargar React en este HTML', String(err && err.message ? err.message : err));
+	}
+}
+
+function renderPreview(injectedData) {
+	try {
+		if (!window.__megactivo_libs_ready) return showError('Librerías no cargadas', 'Intenta nuevamente en unos segundos.');
+		let src = APP_SOURCE;
+		if (injectedData) {
+			// Reemplaza la definición de SAMPLE si existe
+			src = src.replace(/const SAMPLE = [\s\S]*?;\n/, 'const SAMPLE = ' + JSON.stringify(injectedData) + ';\n');
+		}
+		const compiled = Babel.transform(src, { presets: ['react'] }).code;
+		// Limpia root antes de renderizar
+		const root = document.getElementById('root');
+		root.innerHTML = '';
+		(0, eval)(compiled);
+	} catch (e) {
+		console.error(e);
+		showError('Error al renderizar', String(e && e.message ? e.message : e));
+	}
+}
+
+window.addEventListener('message', (ev) => {
+	try {
+		const msg = ev.data || {};
+		if (msg && msg.type === 'render') {
+			renderPreview(msg.data || null);
+		}
+	} catch (e) { console.error('message handler', e); }
+});
+
+// iniciar la carga de librerías
+boot();
+</script></body></html>
