@@ -883,7 +883,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "=={{ { ok: true, accion: $items('SET - Datos aprobación')[0].json.accion, content_id: $items('SET - Datos aprobación')[0].json.content_id, estado: $json.estado || 'aprobado — publicacion simulada', calendar_event_id: $items('SET - Datos aprobación')[0].json.calendar_event_id, comentarios: $items('SET - Datos aprobación')[0].json.comentarios, imagen_url: $json.imagen_url || '' } }}",
+        "responseBody": "={{ { ok: true, accion: $items('SET - Datos aprobación')[0].json.accion, content_id: $items('SET - Datos aprobación')[0].json.content_id, estado: $json.estado || 'aprobado — publicacion simulada', calendar_event_id: $items('SET - Datos aprobación')[0].json.calendar_event_id, comentarios: $items('SET - Datos aprobación')[0].json.comentarios, imagen_url: $json.imagen_url || '' } }}",
         "options": {}
       },
       "id": "71b24307-6308-4c23-a836-6077aeacab72",
