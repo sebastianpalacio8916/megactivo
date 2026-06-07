@@ -1,9 +1,38 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
+
+const B = {
+  dark: "#0F393B",
+  primary: "#6EC1E4",
+  accent: "#61CE70",
+  secondary: "#54595F",
+  text: "#7A7A7A",
+  body: "#333333",
+  white: "#FFFFFF",
+  lightBg: "#EAF4F4",
+};
+
+const T = {
+  bodyFont: "'Poppins', sans-serif",
+  primaryFont: "'Roboto', sans-serif",
+  secondaryFont: "'Roboto Slab', serif",
+  bodySize: 15,
+  smallSize: 13,
+  microSize: 11,
+  titleSize: 20,
+  titleLargeSize: 22,
+  bodyLineHeight: 1.7,
+  titleLineHeight: 1.35,
+  textWeight: 400,
+  accentWeight: 500,
+  titleWeight: 600,
+};
 
 const N8N_WEBHOOK_URL = "/n8n/webhook/generar-contenido";
 
 const N8N_APPROVAL_URL = "/n8n/webhook/aprobar-contenido";
+
+const HISTORIAL_KEY = "megactivo_historial";
 
 const LOGOS = {
   mark: "data:image/png;base64,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",
@@ -51,6 +80,52 @@ const SAMPLE = {
     duracion: "55 seg",
   },
 };
+
+function buildDemoResultado(formato, plataforma) {
+  const reactDataByFormato = {
+    post_estatico: {
+      hook: "¿Buscas mejorar tus habilidades?",
+      cuerpo: "Megactivo te ofrece herramientas y recursos para ayudarte en tu camino profesional. Nuestro enfoque es personalizado y práctico.",
+      cierre: "No te quedes atrás, únete a Megactivo hoy mismo.",
+      cta: "¿Qué esperas para empezar tu crecimiento?",
+      hashtags: ["#Megactivo", "#DesarrolloPersonal", "#CarreraProfesional"],
+      plataforma,
+    },
+    carrusel: SAMPLE.carrusel,
+    story: SAMPLE.story,
+    guion_reel: SAMPLE.reel,
+  };
+  return {
+    estado: "pendiente aprobacion",
+    cliente: "Megactivo",
+    plataforma,
+    formato_contenido: formato,
+    calendar_provider: "google",
+    copy: "Descubre el poder de Megactivo",
+    caption_linkedin: "Conoce los beneficios de Megactivo para tu carrera",
+    hashtags: ["#Megactivo", "#DesarrolloPersonal", "#CarreraProfesional"],
+    react_data: reactDataByFormato[formato] ?? reactDataByFormato.post_estatico,
+    calendar_event: { id: "fspieufgo2u63bajron396jat4" },
+    preview_png_url: "https://placehold.co/1024x1024/0F393B/6EC1E4?text=Megactivo",
+  };
+}
+
+function getValidReactData(reactData, formato) {
+  const validators = {
+    post_estatico: (d) => d && d.hook,
+    carrusel: (d) => d && Array.isArray(d.slides),
+    story: (d) => d && Array.isArray(d.frames),
+    guion_reel: (d) => d && d.gancho,
+  };
+  if (validators[formato]?.(reactData)) return reactData;
+  const fallback = {
+    post_estatico: SAMPLE.post,
+    carrusel: SAMPLE.carrusel,
+    story: SAMPLE.story,
+    guion_reel: SAMPLE.reel,
+  };
+  return fallback[formato] ?? reactData ?? null;
+}
 
 const tabs = [
   { id: "post", label: "Post Estático" },
@@ -197,6 +272,14 @@ function App() {
   const [aprobacionResultado, setAprobacionResultado] = useState(null);
   const [aprobacionError, setAprobacionError] = useState("");
   const [comentariosAprobacion, setComentariosAprobacion] = useState("");
+  const [showTemplate, setShowTemplate] = useState(false);
+
+  const [historial, setHistorial] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(HISTORIAL_KEY) || "[]"); }
+    catch { return []; }
+  });
+  const [historialIdActual, setHistorialIdActual] = useState(null);
+  const [verHistorial, setVerHistorial] = useState(false);
 
   const hoy = useMemo(() => new Date().toISOString().split("T")[0], []);
 
@@ -371,6 +454,7 @@ function App() {
     setAprobacionResultado(null);
     setAprobacionError("");
     setComentariosAprobacion("");
+    setShowTemplate(false);
 
     const validationError = validarFormulario();
 
@@ -393,35 +477,45 @@ function App() {
       };
 
 
-      const response = await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+      let response;
+      try {
+        response = await fetch(N8N_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       if (!response.ok) {
         throw new Error("HTTP " + response.status + ": " + await response.text().catch(() => ""));
       }
-      const raw = await response.text(); // leer una sola vez
+      const raw = await response.text();
       let data;
 
       try {
-        data = JSON.parse(raw); // intentar parsear como JSON
+        data = JSON.parse(raw);
       } catch {
-        data = raw; // si no es JSON, usar texto plano
+        data = raw;
       }
 
       if (!data || (typeof data === "string" && !data.trim())) {
         throw new Error("N8N respondio vacio: revisa los Executions en N8N.");
       }
       setResultado(data);
+      guardarEnHistorial(data, formData.formato_contenido, formData.plataforma);
     } catch (err) {
       console.error("Error al conectar con N8N:", err);
 
       setError(
-        "No se pudo conectar con N8N (" + err.message + "). Revisa que el workflow esté publicado en N8N."
+        err.name === "AbortError"
+          ? "N8N no respondió en 30 segundos. Revisa que el workflow esté activo y vuelve a intentarlo."
+          : "No se pudo conectar con N8N (" + err.message + "). Revisa que el workflow esté publicado en N8N."
       );
     } finally {
       setLoading(false);
@@ -429,27 +523,76 @@ function App() {
   };
 
 
+  const guardarEnHistorial = (data, formato, plataforma) => {
+    const id = data.content_id || String(Date.now());
+    const registro = {
+      id,
+      fecha: new Date().toISOString(),
+      cliente: data.cliente || "Megactivo",
+      plataforma,
+      formato,
+      estado: "pendiente",
+      comentarios: "",
+      caption: data.caption_instagram || data.copy || "",
+    };
+    setHistorial(prev => {
+      const nuevo = [registro, ...prev].slice(0, 100);
+      localStorage.setItem(HISTORIAL_KEY, JSON.stringify(nuevo));
+      return nuevo;
+    });
+    setHistorialIdActual(id);
+  };
+
+  const actualizarEstadoHistorial = (id, estado, comentarios = "") => {
+    if (!id) return;
+    setHistorial(prev => {
+      const nuevo = prev.map(r => r.id === id ? { ...r, estado, comentarios } : r);
+      localStorage.setItem(HISTORIAL_KEY, JSON.stringify(nuevo));
+      return nuevo;
+    });
+  };
+
   const handleAprobacion = async (accion) => {
+    const basePayload = {
+      accion,
+      content_id: resultado.content_id || "",
+      calendar_event_id: resultado.calendar_event?.id || "",
+      calendar_provider: resultado.calendar_provider || formData.calendar_provider,
+      comentarios: comentariosAprobacion,
+    };
+
+    if (accion === "rechazar") {
+      // Notifica n8n en segundo plano (fire-and-forget)
+      fetch(N8N_APPROVAL_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(basePayload),
+      }).catch(() => {});
+      actualizarEstadoHistorial(historialIdActual, "rechazado", comentariosAprobacion);
+      setResultado(null);
+      setAprobacionResultado(null);
+      setAprobacionError("");
+      setComentariosAprobacion("");
+      setShowTemplate(false);
+      setHistorialIdActual(null);
+      return;
+    }
+
     setAprobando(accion);
     setAprobacionError("");
+    setShowTemplate(true);
     try {
-      const payload = {
-        accion,
-        content_id: resultado.content_id || "",
-        calendar_event_id: resultado.calendar_event?.id || "",
-        calendar_provider: resultado.calendar_provider || formData.calendar_provider,
-        comentarios: comentariosAprobacion,
-      };
       const response = await fetch(N8N_APPROVAL_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(basePayload),
       });
       if (!response.ok) throw new Error("Error HTTP: " + response.status);
       const raw = await response.text();
       let data;
       try { data = JSON.parse(raw); } catch { data = raw; }
       setAprobacionResultado({ ...data, accion });
+      actualizarEstadoHistorial(historialIdActual, "aprobado");
     } catch (err) {
       console.error("Error en aprobación:", err);
       setAprobacionError("No se pudo procesar la acción. Revisa que el workflow de aprobación esté activo.");
@@ -458,16 +601,8 @@ function App() {
     }
   };
 
-  const formatoResultado = resultado?.formato_contenido || formData.formato_contenido;
-  const iframeRef = useRef(null);
-
-  useEffect(() => {
-    if (!iframeRef.current) return;
-    if (resultado?.react_data) {
-      const w = iframeRef.current.contentWindow;
-      if (w) w.postMessage({ type: "render", data: resultado.react_data, formato: formatoResultado }, "*");
-    }
-  }, [resultado?.react_data, formatoResultado]);
+  const formatoResultado = formData.formato_contenido;
+  const effectiveReactData = getValidReactData(resultado?.react_data, formatoResultado);
 
   return (
     <main className="app-shell">
@@ -616,9 +751,27 @@ function App() {
 
           {error && <div className="alert-error">{error}</div>}
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Generando contenido..." : "Generar contenido"}
-          </button>
+          <div className="form-actions-row">
+            <button type="submit" disabled={loading}>
+              {loading ? "Generando contenido..." : "Generar contenido"}
+            </button>
+            <button
+              type="button"
+              className="btn-demo"
+              onClick={() => {
+                setError("");
+                setAprobacionResultado(null);
+                setAprobacionError("");
+                setComentariosAprobacion("");
+                setShowTemplate(false);
+                const demoData = buildDemoResultado(formData.formato_contenido, formData.plataforma);
+                setResultado(demoData);
+                guardarEnHistorial(demoData, formData.formato_contenido, formData.plataforma);
+              }}
+            >
+              Modo Demo
+            </button>
+          </div>
         </form>
 
         {resultado && (
@@ -641,11 +794,7 @@ function App() {
 
               <div>
                 <span>Formato</span>
-                <strong>
-                  {resultado.formato_contenido ||
-                    resultado.formato ||
-                    formData.formato_contenido}
-                </strong>
+                <strong>{formData.formato_contenido}</strong>
               </div>
 
               <div>
@@ -678,32 +827,12 @@ function App() {
               </div>
             )}
 
-            {resultado.react_data && (
+            {effectiveReactData && (
               <div className="rd-wrapper">
-                <ReactDataRenderer data={resultado.react_data} formato={formatoResultado}></ReactDataRenderer>
+                <ReactDataRenderer data={effectiveReactData} formato={formatoResultado} />
               </div>
             )}
 
-            {/* Vista completa de la plantilla (servida desde /public) */}
-            {resultado && (
-              <div style={{ marginTop: 18 }}>
-                <h3 style={{ margin: '6px 0 10px' }}>Vista completa (cliente)</h3>
-                <div style={{ border: '1px solid #e6e6e6', borderRadius: 8, overflow: 'hidden' }}>
-                  <iframe
-                    ref={iframeRef}
-                    title="Preview plantilla Megactivo"
-                    src="/MegactivoTemplates_visualizacion_react_SIN_SLOGAN.html"
-                    onLoad={() => {
-                      if (resultado?.react_data && iframeRef.current?.contentWindow) {
-                        iframeRef.current.contentWindow.postMessage({ type: "render", data: resultado.react_data, formato: formatoResultado }, "*");
-                      }
-                    }}
-                    style={{ width: '100%', height: 640, border: 'none', display: 'block' }}
-                  />
-                </div>
-                <p style={{ marginTop: 8 }}><a href="/MegactivoTemplates_visualizacion_react_SIN_SLOGAN.html" target="_blank" rel="noreferrer">Abrir en pestaña nueva</a></p>
-              </div>
-            )}
 
             {resultado.calendar_event?.id && (
               <div className="calendar-box">
@@ -712,15 +841,11 @@ function App() {
               </div>
             )}
 
-            {resultado.preview_png_url && (
-              <div className="calendar-box">
-                <span>Preview PNG</span>
-                <code>{resultado.preview_png_url}</code>
-              </div>
-            )}
 
             <div className="approval-section">
-              <label htmlFor="comentarios">Comentarios (opcional)</label>
+              <label htmlFor="comentarios">
+                Comentarios <span className="label-optional">(opcional para aprobar · obligatorio para rechazar)</span>
+              </label>
               <textarea
                 id="comentarios"
                 value={comentariosAprobacion}
@@ -731,20 +856,37 @@ function App() {
               <div className="approval-actions">
                 <button
                   className="btn-approve"
-                  disabled={aprobando !== false}
+                  disabled={aprobando !== false || aprobacionResultado?.accion === "aprobar"}
                   onClick={() => handleAprobacion("aprobar")}
                   type="button"
                 >
                   {aprobando === "aprobar" ? "Aprobando..." : "Aprobar"}
                 </button>
-                <button
-                  className="btn-reject"
-                  disabled={aprobando !== false}
-                  onClick={() => handleAprobacion("rechazar")}
-                  type="button"
-                >
-                  {aprobando === "rechazar" ? "Rechazando..." : "Rechazar"}
-                </button>
+                {aprobacionResultado?.accion === "aprobar" ? (
+                  <button
+                    className="btn-new-campaign"
+                    type="button"
+                    onClick={() => {
+                      setResultado(null);
+                      setAprobacionResultado(null);
+                      setAprobacionError("");
+                      setComentariosAprobacion("");
+                      setShowTemplate(false);
+                      setHistorialIdActual(null);
+                    }}
+                  >
+                    Nueva campaña
+                  </button>
+                ) : (
+                  <button
+                    className="btn-reject"
+                    disabled={aprobando !== false || !comentariosAprobacion.trim()}
+                    onClick={() => handleAprobacion("rechazar")}
+                    type="button"
+                  >
+                    {aprobando === "rechazar" ? "Rechazando..." : "Rechazar"}
+                  </button>
+                )}
               </div>
               {aprobacionError && (
                 <p className="approval-err">{aprobacionError}</p>
@@ -764,8 +906,99 @@ function App() {
                   </p>
                 </div>
               )}
+              {showTemplate && effectiveReactData && (
+                <div className="template-preview">
+                  <h3>Vista completa aprobada</h3>
+                  <div className="template-preview-inner">
+                    <ReactDataRenderer data={effectiveReactData} formato={formatoResultado} />
+                  </div>
+                  {aprobacionResultado?.imagen_url && (
+                    <div className="imagen-sugerida">
+                      <h4>Imagen sugerida</h4>
+                      <img
+                        src={aprobacionResultado.imagen_url}
+                        alt="Imagen sugerida para la publicación"
+                        className="imagen-sugerida-img"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </section>
+        )}
+      </section>
+
+      <section className="seguimiento-section">
+        <button
+          className="seguimiento-toggle"
+          onClick={() => setVerHistorial(v => !v)}
+          type="button"
+        >
+          <span>Seguimiento de publicaciones</span>
+          <span className="seguimiento-count">{historial.length}</span>
+          <span className="seguimiento-chevron">{verHistorial ? "▲" : "▼"}</span>
+        </button>
+
+        {verHistorial && (
+          <div className="seguimiento-body">
+            {historial.length === 0 ? (
+              <p className="seguimiento-empty">Aún no hay publicaciones registradas.</p>
+            ) : (
+              <>
+                <div className="seguimiento-actions-row">
+                  <button
+                    className="seguimiento-clear"
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm("¿Borrar todo el historial?")) {
+                        setHistorial([]);
+                        localStorage.removeItem(HISTORIAL_KEY);
+                      }
+                    }}
+                  >
+                    Borrar historial
+                  </button>
+                </div>
+                <div className="seguimiento-table-wrap">
+                  <table className="seguimiento-table">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Plataforma</th>
+                        <th>Formato</th>
+                        <th>Caption</th>
+                        <th>Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historial.map(r => (
+                        <tr key={r.id}>
+                          <td className="seg-fecha">
+                            {new Date(r.fecha).toLocaleDateString("es-CO", {
+                              day: "2-digit", month: "2-digit", year: "2-digit",
+                              hour: "2-digit", minute: "2-digit",
+                            })}
+                          </td>
+                          <td>{r.cliente}</td>
+                          <td>{r.plataforma}</td>
+                          <td>{r.formato}</td>
+                          <td className="seg-caption">{r.caption || "—"}</td>
+                          <td>
+                            <span className={`seg-estado seg-${r.estado}`}>
+                              {r.estado === "aprobado" ? "Aprobado" :
+                               r.estado === "rechazado" ? "Rechazado" : "Pendiente"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
         )}
       </section>
     </main>

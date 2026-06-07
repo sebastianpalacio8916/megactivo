@@ -10,123 +10,65 @@
           "allowedOrigins": "*"
         }
       },
-      "id": "5f22531d-387c-4a43-8c68-2a8f1d6ef099",
+      "id": "72d18a5d-5753-4100-a7f4-56ec536451e9",
       "name": "Webhook - Generar contenido",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1344,
-        96
+        2304,
+        816
       ],
       "webhookId": "b78e865a-e2f7-4513-86db-0ca07e35f58a"
     },
     {
       "parameters": {
-        "keepOnlySet": false,
-        "values": {
-          "string": [
+        "fields": {
+          "values": [
             {
               "name": "cliente",
-              "value": "Megactivo"
+              "stringValue": "={{ $json.body.cliente || 'Megactivo' }}"
             },
             {
               "name": "plataforma",
-              "value": "={{ $json.body.plataforma || $json.plataforma || 'Instagram' }}"
+              "stringValue": "={{ $json.body.plataforma }}"
             },
             {
               "name": "formato_contenido",
-              "value": "={{ ($json.body.formato_contenido || $json.formato_contenido || 'post_estatico').toLowerCase() }}"
+              "stringValue": "={{ $json.body.formato_contenido }}"
             },
             {
               "name": "objetivo_post",
-              "value": "={{ $json.body.objetivo_post || $json.body.objetivo || $json.objetivo_post || '' }}"
+              "stringValue": "={{ $json.body.objetivo_post }}"
             },
             {
               "name": "fecha_publicacion",
-              "value": "={{ $json.body.fecha_publicacion || $json.fecha_publicacion || '' }}"
+              "stringValue": "={{ $json.body.fecha_publicacion }}"
             },
             {
               "name": "hora_publicacion",
-              "value": "={{ $json.body.hora_publicacion || $json.hora_publicacion || '' }}"
+              "stringValue": "={{ $json.body.hora_publicacion }}"
             },
             {
               "name": "calendar_provider",
-              "value": "={{ ($json.body.calendar_provider || $json.calendar_provider || 'google').toLowerCase() }}"
-            }
-          ],
-          "object": [
+              "stringValue": "={{ $json.body.calendar_provider }}"
+            },
             {
               "name": "brand_json",
-              "value": {
-                "identidad_estrategica": {
-                  "proposito": "Acompañar a empresas, contadores e instituciones con soluciones tecnológicas que automatizan su gestión administrativa y contable.",
-                  "tono": "Profesional, cercano, claro, educativo y orientado a la acción.",
-                  "pilares": [
-                    "Educación",
-                    "Confianza",
-                    "Actualidad",
-                    "Soluciones",
-                    "Autoridad técnica"
-                  ],
-                  "propuesta_de_valor": "El primer software contable colombiano con IA para pymes e instituciones educativas."
-                },
-                "publico_objetivo": [
-                  "Empresario",
-                  "Contador",
-                  "Institución"
-                ],
-                "publicos_prioritarios": [
-                  "Pymes colombianas",
-                  "Instituciones educativas privadas",
-                  "Empresas retail",
-                  "Equipos administrativos y contables"
-                ],
-                "identidad_visual": {
-                  "colores": [
-                    "#0F393B",
-                    "#6EC1E4",
-                    "#61CE70"
-                  ],
-                  "fuentes": [
-                    "Poppins",
-                    "Roboto",
-                    "Roboto Slab"
-                  ],
-                  "reglas": [
-                    "Usar alto contraste",
-                    "Mantener jerarquía visual clara",
-                    "Evitar saturación de texto"
-                  ]
-                },
-                "compatibilidad_formatos": {
-                  "Instagram": [
-                    "post_estatico",
-                    "carrusel",
-                    "story",
-                    "guion_reel"
-                  ],
-                  "LinkedIn": [
-                    "post_estatico",
-                    "carrusel"
-                  ],
-                  "Ambas": [
-                    "post_estatico",
-                    "carrusel"
-                  ]
-                }
-              }
+              "type": "objectValue",
+              "objectValue": "={{ $json.body.brand_json || {} }}"
             }
           ]
         },
+        "include": "none",
         "options": {}
       },
-      "id": "55747057-fabd-40af-8580-3a2f00030fe2",
+      "id": "6ba4cb48-288b-4687-a26d-1b0acdf24155",
       "name": "SET - Entrada + Brand JSON",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        -1120,
-        96
+        2528,
+        816
       ]
     },
     {
@@ -134,7 +76,7 @@
         "method": "POST",
         "url": "https://api.groq.com/openai/v1/chat/completions",
         "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
+        "genericAuthType": "httpBearerAuth",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -146,134 +88,321 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{JSON.stringify({ model: 'llama-3.3-70b-versatile', temperature: 0.65, response_format: { type: 'json_object' }, messages: [ { role: 'system', content: 'Eres Emiliano, agente senior de contenido para Megactivo. Genera contenido para redes sociales usando el Brand JSON del usuario. Devuelve SOLO JSON valido, sin markdown, sin explicacion adicional.\\n\\nREGLAS:\\n- story y guion_reel: solo Instagram. LinkedIn: solo post_estatico o carrusel. Si el formato no es compatible, corrige al mas cercano.\\n\\nEl JSON debe tener EXACTAMENTE estos campos de primer nivel:\\nformato_contenido, pilar_contenido, caption_instagram, caption_linkedin, hashtags (array), necesita_foto (boolean), prompt_imagen, fecha_publicacion_sugerida, observaciones, react_data.\\n\\nEl campo react_data debe tener la estructura EXACTA segun formato_contenido:\\n\\nSi post_estatico -> react_data={\"hook\":\"gancho impactante 1 frase\",\"cuerpo\":\"desarrollo 2-3 frases\",\"cierre\":\"reflexion o dato de cierre\",\"cta\":\"pregunta o llamada a la accion\",\"hashtags\":[\"#tag1\",\"#tag2\",\"#tag3\"],\"plataforma\":\"Instagram\"}\\n\\nSi carrusel -> react_data={\"slides\":[{\"tipo\":\"hook\",\"texto\":\"titulo impactante\"},{\"tipo\":\"valor\",\"titulo\":\"Titulo punto\",\"cuerpo\":\"Explicacion\"},{\"tipo\":\"valor\",\"titulo\":\"Titulo punto 2\",\"cuerpo\":\"Explicacion 2\"},{\"tipo\":\"remate\",\"texto\":\"Reflexion de cierre\"},{\"tipo\":\"cta\",\"texto\":\"CTA o pregunta\",\"marca\":\"Megactivo\"}]}\\n\\nSi story -> react_data={\"frames\":[{\"tipo\":\"problema\",\"texto\":\"Pregunta o dolor que resuena\",\"poll\":[\"Opcion A\",\"Opcion B\"]},{\"tipo\":\"solucion\",\"texto\":\"La solucion de Megactivo\",\"detalle\":\"Subtitulo o dato de credibilidad\"},{\"tipo\":\"cta\",\"texto\":\"Llamada a la accion concreta\",\"link\":\"megactivo.com\"}]}\\n\\nSi guion_reel -> react_data={\"gancho\":\"Frase gancho 0-3seg\",\"problema\":\"Descripcion del problema 3-8seg\",\"puntos\":[{\"titulo\":\"Punto 1\",\"overlay\":\"Texto en pantalla corto\",\"cuerpo\":\"Voz en off del punto 1\"},{\"titulo\":\"Punto 2\",\"overlay\":\"Texto en pantalla corto\",\"cuerpo\":\"Voz en off del punto 2\"}],\"cierre\":\"Reflexion de cierre\",\"cta\":\"CTA final del reel\",\"duracion\":\"60 seg\"}' }, { role: 'user', content: JSON.stringify({ cliente: $json.cliente, plataforma: $json.plataforma, formato_contenido: $json.formato_contenido, objetivo_post: $json.objetivo_post, fecha_publicacion: $json.fecha_publicacion, calendar_provider: $json.calendar_provider, brand_json: $json.brand_json }) } ] })}}",
+        "jsonBody": "={{ { \"model\": \"llama-3.3-70b-versatile\", \"temperature\": 0.65, \"response_format\": { \"type\": \"json_object\" }, \"messages\": [ { \"role\": \"system\", \"content\": \"Eres Emiliano, agente senior de contenido para Megactivo. Genera contenido para redes sociales usando el Brand JSON del usuario. Devuelve SOLO JSON valido, sin markdown, sin explicacion adicional.\\n\\nREGLAS:\\n- story y guion_reel: solo Instagram. LinkedIn: solo post_estatico o carrusel. Si el formato no es compatible, corrige al mas cercano.\\n\\nEl JSON debe tener EXACTAMENTE estos campos de primer nivel:\\nformato_contenido, pilar_contenido, caption_instagram, caption_linkedin, hashtags (array), necesita_foto (boolean), prompt_imagen, fecha_publicacion_sugerida, observaciones, react_data.\\n\\nINSTRUCCIONES PARA prompt_imagen:\\n- Describe una escena visual concreta y especifica relacionada con el contenido del post (evita cliches genericos como 'gente sonriendo en una oficina').\\n- Indica un estilo visual claro (fotografia profesional realista, ilustracion plana moderna, etc.), el que mejor se adapte al pilar_contenido y al sector (pymes, contabilidad, finanzas, productividad).\\n- Si el Brand JSON incluye colores de marca, menciona esos colores para mantener coherencia visual.\\n- NUNCA pidas texto, palabras, letras, numeros, logotipos ni tipografia dentro de la imagen: el copy va aparte en el caption.\\n- Manten un tono profesional y aspiracional. Se conciso pero descriptivo: 2 a 4 frases con detalles de composicion, iluminacion y ambiente.\\n\\nEl campo react_data debe tener la estructura EXACTA segun formato_contenido:\\n\\nSi post_estatico -> react_data={\\\"hook\\\":\\\"gancho impactante 1 frase\\\",\\\"cuerpo\\\":\\\"desarrollo 2-3 frases\\\",\\\"cierre\\\":\\\"reflexion o dato de cierre\\\",\\\"cta\\\":\\\"pregunta o llamada a la accion\\\",\\\"hashtags\\\":[\\\"#tag1\\\",\\\"#tag2\\\",\\\"#tag3\\\"],\\\"plataforma\\\":\\\"Instagram\\\"}\\n\\nSi carrusel -> react_data={\\\"slides\\\":[{\\\"tipo\\\":\\\"hook\\\",\\\"texto\\\":\\\"titulo impactante\\\"},{\\\"tipo\\\":\\\"valor\\\",\\\"titulo\\\":\\\"Titulo punto\\\",\\\"cuerpo\\\":\\\"Explicacion\\\"},{\\\"tipo\\\":\\\"valor\\\",\\\"titulo\\\":\\\"Titulo punto 2\\\",\\\"cuerpo\\\":\\\"Explicacion 2\\\"},{\\\"tipo\\\":\\\"remate\\\",\\\"texto\\\":\\\"Reflexion de cierre\\\"},{\\\"tipo\\\":\\\"cta\\\",\\\"texto\\\":\\\"CTA o pregunta\\\",\\\"marca\\\":\\\"Megactivo\\\"}]}\\n\\nSi story -> react_data={\\\"frames\\\":[{\\\"tipo\\\":\\\"problema\\\",\\\"texto\\\":\\\"Pregunta o dolor que resuena\\\",\\\"poll\\\":[\\\"Opcion A\\\",\\\"Opcion B\\\"]},{\\\"tipo\\\":\\\"solucion\\\",\\\"texto\\\":\\\"La solucion de Megactivo\\\",\\\"detalle\\\":\\\"Subtitulo o dato de credibilidad\\\"},{\\\"tipo\\\":\\\"cta\\\",\\\"texto\\\":\\\"Llamada a la accion concreta\\\",\\\"link\\\":\\\"megactivo.com\\\"}]}\\n\\nSi guion_reel -> react_data={\\\"gancho\\\":\\\"Frase gancho 0-3seg\\\",\\\"problema\\\":\\\"Descripcion del problema 3-8seg\\\",\\\"puntos\\\":[{\\\"titulo\\\":\\\"Punto 1\\\",\\\"overlay\\\":\\\"Texto en pantalla corto\\\",\\\"cuerpo\\\":\\\"Voz en off del punto 1\\\"},{\\\"titulo\\\":\\\"Punto 2\\\",\\\"overlay\\\":\\\"Texto en pantalla corto\\\",\\\"cuerpo\\\":\\\"Voz en off del punto 2\\\"}],\\\"cierre\\\":\\\"Reflexion de cierre\\\",\\\"cta\\\":\\\"CTA final del reel\\\",\\\"duracion\\\":\\\"60 seg\\\"}\" }, { \"role\": \"user\", \"content\": $json.cliente + \" | \" + $json.plataforma + \" | \" + $json.formato_contenido + \" | \" + $json.objetivo_post + \" | \" + $json.fecha_publicacion + \" | \" + $json.calendar_provider + \" | Brand: \" + JSON.stringify($json.brand_json) } ] } }}",
         "options": {}
       },
-      "id": "9d62b779-96a8-4632-bd87-28c6584a7f1c",
+      "id": "cdce4c06-68ed-45e1-a593-94ba3b2df13f",
       "name": "HTTP - Groq Llama 3.3 70B",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        -896,
-        96
+        2752,
+        816
       ],
       "credentials": {
-        "httpHeaderAuth": {
-          "id": "REEMPLAZAR",
-          "name": "Groq API Key - Header Auth"
+        "httpBearerAuth": {
+          "id": "RhrfkuK2QMy7de0m",
+          "name": "Bearer Auth account"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const raw = $json.choices?.[0]?.message?.content || '{}';\nlet ai;\ntry {\n  ai = JSON.parse(raw);\n} catch (e) {\n  ai = { error: 'Parse error', raw };\n}\n\nconst input = $items('SET - Entrada + Brand JSON')[0].json;\n\nconst compatibilidad = {\n  instagram: ['post_estatico', 'carrusel', 'story', 'guion_reel'],\n  linkedin:  ['post_estatico', 'carrusel'],\n  ambas:     ['post_estatico', 'carrusel'],\n};\n\nconst plataformaKey    = String(input.plataforma || 'Instagram').toLowerCase();\nconst formatoSolicitado = String(input.formato_contenido || 'post_estatico').toLowerCase();\nconst formatosValidos  = compatibilidad[plataformaKey] || compatibilidad.instagram;\nconst formatoFinal     = formatosValidos.includes(formatoSolicitado) ? formatoSolicitado : formatosValidos[0];\n\n// react_data: usa lo que generó el LLM, con fallback por formato\nlet react_data = ai.react_data;\nif (!react_data) {\n  const fmt = ai.formato_contenido || formatoFinal;\n  if (fmt === 'carrusel')    react_data = { slides: ai.slides || [] };\n  else if (fmt === 'story')  react_data = { frames: ai.frames || [] };\n  else if (fmt === 'guion_reel') react_data = { gancho: ai.hook || '', problema: ai.copy || '', puntos: ai.escenas || [], cierre: '', cta: '', duracion: '60 seg' };\n  else react_data = { hook: ai.hook || '', cuerpo: ai.copy || '', cierre: ai.observaciones || '', cta: (ai.caption_instagram || '').slice(0, 120), hashtags: ai.hashtags || [], plataforma: input.plataforma };\n}\n\nconst contentId = String(Date.now());\n\nreturn [{\n  json: {\n    content_id:               contentId,\n    cliente:                  'Megactivo',\n    plataforma:               input.plataforma,\n    formato_contenido:        ai.formato_contenido || formatoFinal,\n    formato_solicitado:       formatoSolicitado,\n    objetivo_post:            input.objetivo_post,\n    fecha_publicacion:        input.fecha_publicacion,\n    hora_publicacion:         input.hora_publicacion,\n    calendar_provider:        input.calendar_provider,\n    brand_json:               input.brand_json,\n    pilar_contenido:          ai.pilar_contenido || '',\n    react_data,\n    caption_instagram:        ai.caption_instagram || '',\n    caption_linkedin:         ai.caption_linkedin  || '',\n    necesita_foto:            Boolean(ai.necesita_foto),\n    prompt_imagen:            ai.prompt_imagen || '',\n    hashtags:                 ai.hashtags || [],\n    observaciones:            ai.observaciones || '',\n    fecha_publicacion_sugerida: ai.fecha_publicacion_sugerida || input.fecha_publicacion,\n    imagen_url:               '',\n    estado:                   'pendiente aprobacion'\n  }\n}];"
+        "jsCode": "const raw = $json.choices?.[0]?.message?.content || '{}';\nlet ai;\ntry {\n  ai = JSON.parse(raw);\n} catch (e) {\n  ai = { error: 'Parse error', raw };\n}\n\nconst input = $items('SET - Entrada + Brand JSON')[0].json;\n\nconst compatibilidad = {\n  instagram: ['post_estatico', 'carrusel', 'story', 'guion_reel'],\n  linkedin:  ['post_estatico', 'carrusel'],\n  ambas:     ['post_estatico', 'carrusel'],\n};\n\nconst plataformaKey    = String(input.plataforma || 'Instagram').toLowerCase();\nconst formatoSolicitado = String(input.formato_contenido || 'post_estatico').toLowerCase();\nconst formatosValidos  = compatibilidad[plataformaKey] || compatibilidad.instagram;\nconst formatoFinal     = formatosValidos.includes(formatoSolicitado) ? formatoSolicitado : formatosValidos[0];\n\n// react_data: usa lo que generó el LLM, con fallback por formato\nlet react_data = ai.react_data;\nif (!react_data) {\n  const fmt = formatoFinal;\n  if (fmt === 'carrusel')    react_data = { slides: ai.slides || [] };\n  else if (fmt === 'story')  react_data = { frames: ai.frames || [] };\n  else if (fmt === 'guion_reel') react_data = { gancho: ai.hook || '', problema: ai.copy || '', puntos: ai.escenas || [], cierre: '', cta: '', duracion: '60 seg' };\n  else react_data = { hook: ai.hook || '', cuerpo: ai.copy || '', cierre: ai.observaciones || '', cta: (ai.caption_instagram || '').slice(0, 120), hashtags: ai.hashtags || [], plataforma: input.plataforma };\n}\n\nconst contentId = String(Date.now());\n\nreturn [{\n  json: {\n    content_id:               contentId,\n    cliente:                  'Megactivo',\n    plataforma:               input.plataforma,\n    formato_contenido:        formatoFinal,\n    formato_solicitado:       formatoSolicitado,\n    objetivo_post:            input.objetivo_post,\n    fecha_publicacion:        input.fecha_publicacion,\n    hora_publicacion:         input.hora_publicacion,\n    calendar_provider:        input.calendar_provider,\n    brand_json:               input.brand_json,\n    pilar_contenido:          ai.pilar_contenido || '',\n    react_data,\n    caption_instagram:        ai.caption_instagram || '',\n    caption_linkedin:         ai.caption_linkedin  || '',\n    necesita_foto:            Boolean(ai.necesita_foto),\n    prompt_imagen:            ai.prompt_imagen || '',\n    hashtags:                 ai.hashtags || [],\n    observaciones:            ai.observaciones || '',\n    fecha_publicacion_sugerida: ai.fecha_publicacion_sugerida || input.fecha_publicacion,\n    imagen_url:               '',\n    estado:                   'pendiente aprobacion'\n  }\n}];"
       },
-      "id": "4f09684f-99ac-4fe2-b407-4ee7614cec7e",
+      "id": "7959eb5d-9afa-40ac-ba1b-9db90d87ed1c",
       "name": "CODE - Parsear respuesta + React mapping",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
-        96
+        2976,
+        816
       ]
     },
     {
       "parameters": {
-        "jsCode": "// Imagen mock — evita la dependencia de Replicate para el MVP.\n// En producción: reemplazar con llamada real a Replicate o DALL·E.\nconst placeholder = 'https://placehold.co/1024x1024/0F393B/6EC1E4?text=Megactivo';\nreturn [{ json: { ...$json, imagen_url: placeholder } }];"
-      },
-      "id": "v3-code-img-mock",
-      "name": "CODE - Imagen mock (placeholder)",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -448,
-        96
-      ]
-    },
-    {
-      "parameters": {
-        "resource": "sheet",
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "REEMPLAZAR_CON_ID_DE_GOOGLE_SHEET",
-          "mode": "id"
+          "value": "1KP-NOu4W8dmHXH5JRIKLjrrRuAeAGSaGarxyQC8NurQ",
+          "mode": "list",
+          "cachedResultName": "Megactivo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KP-NOu4W8dmHXH5JRIKLjrrRuAeAGSaGarxyQC8NurQ/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
-          "mode": "gid"
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KP-NOu4W8dmHXH5JRIKLjrrRuAeAGSaGarxyQC8NurQ/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
             "content_id": "={{ $json.content_id }}",
-            "estado": "={{ $json.estado }}",
             "cliente": "={{ $json.cliente }}",
-            "plataforma": "={{ $json.plataforma }}",
             "formato_contenido": "={{ $json.formato_contenido }}",
+            "formato_solicitado": "={{ $json.formato_solicitado }}",
             "pilar_contenido": "={{ $json.pilar_contenido }}",
+            "react_data_json": "={{ JSON.stringify($json.react_data) }}",
             "caption_instagram": "={{ $json.caption_instagram }}",
             "caption_linkedin": "={{ $json.caption_linkedin }}",
-            "hashtags": "={{ ($json.hashtags || []).join(' ') }}",
+            "necesita_foto": "={{ $json.necesita_foto }}",
+            "prompt_imagen": "={{ $json.prompt_imagen }}",
+            "hashtags": "={{ ($json.hashtags || []).join(\" \") }}",
+            "observaciones": "={{ $json.observaciones }}",
             "fecha_publicacion_sugerida": "={{ $json.fecha_publicacion_sugerida }}",
             "hora_publicacion": "={{ $json.hora_publicacion }}",
             "imagen_url": "={{ $json.imagen_url }}",
-            "react_data_json": "={{ JSON.stringify($json.react_data) }}",
-            "observaciones": "={{ $json.observaciones }}"
+            "estado": "={{ $json.estado }}",
+            "plataforma": "={{ $json.plataforma }}"
           },
           "matchingColumns": [],
-          "schema": []
+          "schema": [
+            {
+              "id": "content_id",
+              "displayName": "content_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente",
+              "displayName": "cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "plataforma",
+              "displayName": "plataforma",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "formato_contenido",
+              "displayName": "formato_contenido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "formato_solicitado",
+              "displayName": "formato_solicitado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pilar_contenido",
+              "displayName": "pilar_contenido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "react_data_json",
+              "displayName": "react_data_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "caption_instagram",
+              "displayName": "caption_instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "caption_linkedin",
+              "displayName": "caption_linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "necesita_foto",
+              "displayName": "necesita_foto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "prompt_imagen",
+              "displayName": "prompt_imagen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hashtags",
+              "displayName": "hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "observaciones",
+              "displayName": "observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_publicacion_sugerida",
+              "displayName": "fecha_publicacion_sugerida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hora_publicacion",
+              "displayName": "hora_publicacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "imagen_url",
+              "displayName": "imagen_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "react_data",
+              "displayName": "react_data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "headers",
+              "displayName": "headers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "params",
+              "displayName": "params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "webhookUrl",
+              "displayName": "webhookUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "executionMode",
+              "displayName": "executionMode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
         },
         "options": {}
       },
-      "id": "v3-sheets-save",
+      "id": "8f163c04-306d-4e5e-b53e-59bb7c6b4524",
       "name": "Google Sheets - Guardar contenido",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        -224,
-        96
+        3200,
+        816
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "REEMPLAZAR",
-          "name": "Google Sheets OAuth2"
+          "id": "NjWl1jZ6iZUN51qG",
+          "name": "Google Sheets OAuth2 API"
         }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "combinator": "and",
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 1
-          },
-          "conditions": [
-            {
-              "leftValue": "={{ $json.calendar_provider }}",
-              "rightValue": "microsoft",
-              "operator": {
-                "type": "string",
-                "operation": "contains"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "20e54492-1193-4604-86dd-def472641ea2",
-      "name": "IF - Calendar Provider",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        0,
-        96
-      ]
+      }
     },
     {
       "parameters": {
@@ -285,82 +414,36 @@
         "start": "={{ DateTime.fromISO(($json.fecha_publicacion_sugerida || $json.fecha_publicacion) + 'T' + ($json.hora_publicacion || '09:00') + ':00').toISO() }}",
         "end": "={{ DateTime.fromISO(($json.fecha_publicacion_sugerida || $json.fecha_publicacion) + 'T' + ($json.hora_publicacion || '09:00') + ':00').plus({hours:1}).toISO() }}",
         "additionalFields": {
-          "summary": "={{ '[EMILIANO] ' + $json.plataforma + ' — ' + $json.formato_contenido + ' — ' + $json.pilar_contenido }}",
-          "description": "={{ 'ID: ' + $json.content_id + '\\nCliente: ' + $json.cliente + '\\nPlataforma: ' + $json.plataforma + '\\nFormato: ' + $json.formato_contenido + '\\nPilar: ' + $json.pilar_contenido + '\\n\\nCaption IG:\\n' + $json.caption_instagram + '\\n\\nCaption LI:\\n' + $json.caption_linkedin + '\\n\\nHashtags: ' + (($json.hashtags || []).join(' ')) + '\\n\\nEstado: ' + $json.estado + ($json.observaciones ? '\\nObservaciones: ' + $json.observaciones : '') }}"
+          "description": "={{ 'ID: ' + $json.content_id + '\\nCliente: ' + $json.cliente + '\\nPlataforma: ' + $json.plataforma + '\\nFormato: ' + $json.formato_contenido + '\\nPilar: ' + $json.pilar_contenido + '\\n\\nCaption IG:\\n' + $json.caption_instagram + '\\n\\nCaption LI:\\n' + $json.caption_linkedin + '\\n\\nHashtags: ' + (($json.hashtags || []).join(' ')) + '\\n\\nEstado: ' + $json.estado + ($json.observaciones ? '\\nObservaciones: ' + $json.observaciones : '') }}",
+          "summary": "={{ '[EMILIANO] ' + $json.plataforma + ' — ' + $json.formato_contenido + ' — ' + $json.pilar_contenido }}"
         }
       },
-      "id": "843fed3a-0bc0-4d6e-894d-7bbbf978b710",
+      "id": "03dc9522-7316-4342-999b-f559edcb9087",
       "name": "Google Calendar - Crear evento",
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        224,
-        192
+        3424,
+        816
       ],
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "REEMPLAZAR",
-          "name": "Google Calendar OAuth2"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
-        "resource": "event",
-        "operation": "create",
-        "calendarId": {
-          "__rl": true,
-          "mode": "list",
-          "value": ""
-        },
-        "subject": "={{ '[EMILIANO] ' + $json.plataforma + ' — ' + $json.formato_contenido + ' — ' + $json.pilar_contenido }}",
-        "startDateTime": "={{ DateTime.fromISO(($json.fecha_publicacion_sugerida || $json.fecha_publicacion) + 'T' + ($json.hora_publicacion || '09:00') + ':00').toISO() }}",
-        "endDateTime": "={{ DateTime.fromISO(($json.fecha_publicacion_sugerida || $json.fecha_publicacion) + 'T' + ($json.hora_publicacion || '09:00') + ':00').plus({hours:1}).toISO() }}",
-        "additionalFields": {
-          "body": "={{ 'ID: ' + $json.content_id + '\\nCliente: ' + $json.cliente + '\\nPlataforma: ' + $json.plataforma + '\\nFormato: ' + $json.formato_contenido + '\\nCaption: ' + $json.caption_instagram + '\\nEstado: ' + $json.estado }}"
-        }
-      },
-      "id": "f84452e7-5cf4-4292-80b6-617e19668693",
-      "name": "Microsoft Outlook - Crear evento",
-      "type": "n8n-nodes-base.microsoftOutlook",
-      "typeVersion": 2,
-      "position": [
-        224,
-        0
-      ],
-      "webhookId": "c6064a22-7e83-427e-b5ee-54c68d597823",
-      "credentials": {
-        "microsoftOutlookOAuth2Api": {
-          "id": "REEMPLAZAR",
-          "name": "Microsoft Outlook OAuth2"
+          "id": "tXrQHIMlqum9ftYB",
+          "name": "Google Calendar OAuth2 API"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const gen = $items('CODE - Imagen mock (placeholder)')[0].json;\nreturn [{ json: { ...gen, calendar_event: $json, calendar_provider_final: 'google' } }];"
+        "jsCode": "const gen = $items('CODE - Parsear respuesta + React mapping')[0].json;\nreturn [{ json: { ...gen, calendar_event: $json, calendar_provider_final: 'google' } }];"
       },
-      "id": "02f24ab2-bab0-44bc-b2fe-303528c4a04e",
+      "id": "7dee93b7-f1cc-4228-9ad1-006206b21a87",
       "name": "CODE - Resultado Google Calendar",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        448,
-        192
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "const gen = $items('CODE - Imagen mock (placeholder)')[0].json;\nreturn [{ json: { ...gen, calendar_event: $json, calendar_provider_final: 'microsoft' } }];"
-      },
-      "id": "aa1cfcd8-323f-42d4-8972-6b7a70780f62",
-      "name": "CODE - Resultado Microsoft Calendar",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        448,
-        0
+        3648,
+        816
       ]
     },
     {
@@ -369,13 +452,13 @@
         "responseBody": "={{ { ok: true, content_id: $json.content_id, estado: $json.estado, cliente: $json.cliente, plataforma: $json.plataforma, formato_contenido: $json.formato_contenido, pilar_contenido: $json.pilar_contenido, react_data: $json.react_data, caption_instagram: $json.caption_instagram, caption_linkedin: $json.caption_linkedin, hashtags: $json.hashtags, copy: $json.caption_instagram || $json.caption_linkedin || '', imagen_url: $json.imagen_url, preview_png_url: $json.imagen_url, observaciones: $json.observaciones, fecha_publicacion_sugerida: $json.fecha_publicacion_sugerida, calendar_provider: $json.calendar_provider_final, calendar_event: { id: ($json.calendar_event && ($json.calendar_event.id || $json.calendar_event.Id)) || '' } } }}",
         "options": {}
       },
-      "id": "5bb14fc4-2df3-4c43-b6f6-cf51964335f1",
+      "id": "b246ed68-5e03-448a-8ba7-b7d4ad8307ed",
       "name": "Respond - Generación completada",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        672,
-        96
+        3872,
+        816
       ]
     },
     {
@@ -387,63 +470,62 @@
           "allowedOrigins": "*"
         }
       },
-      "id": "0b3cffca-2378-4e22-be23-2ed54ff7adb8",
+      "id": "da2d2a30-5c8a-48cb-bcd9-5344826cdb9d",
       "name": "Webhook - Aprobación React",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1344,
-        512
+        2304,
+        1136
       ],
       "webhookId": "2f245fd2-35b2-4b0b-a788-244a8aa63a81"
     },
     {
       "parameters": {
-        "keepOnlySet": false,
-        "values": {
-          "string": [
+        "fields": {
+          "values": [
             {
               "name": "accion",
-              "value": "={{ ($json.body.accion || $json.accion || 'rechazar').toLowerCase() }}"
+              "stringValue": "={{ $json.body.accion }}"
             },
             {
               "name": "content_id",
-              "value": "={{ $json.body.content_id || $json.content_id || '' }}"
+              "stringValue": "={{ $json.body.content_id }}"
             },
             {
               "name": "calendar_event_id",
-              "value": "={{ $json.body.calendar_event_id || $json.calendar_event_id || '' }}"
+              "stringValue": "={{ $json.body.calendar_event_id }}"
             },
             {
               "name": "calendar_provider",
-              "value": "={{ ($json.body.calendar_provider || $json.calendar_provider || 'google').toLowerCase() }}"
+              "stringValue": "={{ $json.body.calendar_provider }}"
             },
             {
               "name": "comentarios",
-              "value": "={{ $json.body.comentarios || $json.comentarios || '' }}"
+              "stringValue": "={{ $json.body.comentarios }}"
             }
           ]
         },
+        "include": "none",
         "options": {}
       },
-      "id": "e0166992-1d58-4184-b014-abd8d663b844",
+      "id": "aad1f876-f6ee-49ec-9104-1fac4ee8c54f",
       "name": "SET - Datos aprobación",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        -1120,
-        512
+        2528,
+        1136
       ]
     },
     {
       "parameters": {
         "conditions": {
-          "combinator": "and",
           "options": {
             "caseSensitive": true,
             "leftValue": "",
             "typeValidation": "strict",
-            "version": 1
+            "version": 3
           },
           "conditions": [
             {
@@ -452,64 +534,320 @@
               "operator": {
                 "type": "string",
                 "operation": "equals"
-              }
+              },
+              "id": "782fbf92-c054-49f9-b929-8f42ab82cba4"
             }
-          ]
+          ],
+          "combinator": "and"
         },
         "options": {}
       },
-      "id": "f2ce6dd4-45b1-4620-b122-30f438c89a21",
+      "id": "418a3a33-d71a-41ed-85da-64094e37318c",
       "name": "IF - ¿Aprobado?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -896,
-        512
+        2752,
+        1136
       ]
     },
     {
       "parameters": {
-        "resource": "sheet",
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "REEMPLAZAR_CON_ID_DE_GOOGLE_SHEET",
-          "mode": "id"
+          "value": "1KP-NOu4W8dmHXH5JRIKLjrrRuAeAGSaGarxyQC8NurQ",
+          "mode": "list",
+          "cachedResultName": "Megactivo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KP-NOu4W8dmHXH5JRIKLjrrRuAeAGSaGarxyQC8NurQ/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
-          "mode": "gid"
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KP-NOu4W8dmHXH5JRIKLjrrRuAeAGSaGarxyQC8NurQ/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "content_id": "={{ $json.content_id }}",
-            "estado": "={{ $json.accion === 'aprobar' ? 'aprobado — publicacion simulada' : 'rechazado / requiere ajustes' }}",
-            "comentarios": "={{ $json.comentarios }}"
+            "content_id": "={{ String($json.content_id) }}",
+            "estado": "={{ $json.accion === 'aprobar' ? 'aprobado' : 'rechazado' }}",
+            "comentarios ": "={{ $json.comentarios }}",
+            "imagen_url": "={{ $json.imagen_url }}"
           },
           "matchingColumns": [
             "content_id"
           ],
-          "schema": []
+          "schema": [
+            {
+              "id": "content_id",
+              "displayName": "content_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente",
+              "displayName": "cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "plataforma",
+              "displayName": "plataforma",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "formato_contenido",
+              "displayName": "formato_contenido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "formato_solicitado",
+              "displayName": "formato_solicitado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pilar_contenido",
+              "displayName": "pilar_contenido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "react_data_json",
+              "displayName": "react_data_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "caption_instagram",
+              "displayName": "caption_instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "caption_linkedin",
+              "displayName": "caption_linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "necesita_foto",
+              "displayName": "necesita_foto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "prompt_imagen",
+              "displayName": "prompt_imagen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "hashtags",
+              "displayName": "hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "observaciones",
+              "displayName": "observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fecha_publicacion_sugerida",
+              "displayName": "fecha_publicacion_sugerida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "hora_publicacion",
+              "displayName": "hora_publicacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "imagen_url",
+              "displayName": "imagen_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "comentarios ",
+              "displayName": "comentarios ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "react_data",
+              "displayName": "react_data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "headers",
+              "displayName": "headers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "params",
+              "displayName": "params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "webhookUrl",
+              "displayName": "webhookUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "executionMode",
+              "displayName": "executionMode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
         },
         "options": {}
       },
-      "id": "v3-sheets-update",
+      "id": "e7412f35-8577-4b38-b34f-a4c30f9a2ac3",
       "name": "Google Sheets - Actualizar estado",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        -672,
-        416
+        3424,
+        1040
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "REEMPLAZAR",
-          "name": "Google Sheets OAuth2"
+          "id": "NjWl1jZ6iZUN51qG",
+          "name": "Google Sheets OAuth2 API"
         }
-      },
-      "onError": "continueRegularOutput"
+      }
     },
     {
       "parameters": {
@@ -520,35 +858,26 @@
         "jsonBody": "={{ JSON.stringify({ status: 'published_mock', content_id: $json.content_id, calendar_event_id: $json.calendar_event_id, approved_at: $now.toISO() }) }}",
         "options": {}
       },
-      "id": "db3d914b-e778-4493-9084-ce30762afa30",
+      "id": "0b5ed1cc-f697-4ca3-bd23-1f1bf01adb30",
       "name": "HTTP - Publicar Meta/LinkedIn Mock",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        -448,
-        416
+        3648,
+        1040
       ]
     },
     {
       "parameters": {
-        "keepOnlySet": false,
-        "values": {
-          "string": [
-            {
-              "name": "estado",
-              "value": "rechazado / requiere ajustes"
-            }
-          ]
-        },
         "options": {}
       },
-      "id": "d16fbc5e-1f25-4772-8de3-07d4ad1834aa",
+      "id": "65b0edb5-2a08-40db-bfdc-28d4ddc4651f",
       "name": "SET - Rechazado/Requiere ajustes",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        -448,
-        640
+        3424,
+        1232
       ]
     },
     {
@@ -557,60 +886,351 @@
         "responseBody": "={{ { ok: true, accion: $items('SET - Datos aprobación')[0].json.accion, content_id: $items('SET - Datos aprobación')[0].json.content_id, estado: $json.estado || 'aprobado — publicacion simulada', calendar_event_id: $items('SET - Datos aprobación')[0].json.calendar_event_id, comentarios: $items('SET - Datos aprobación')[0].json.comentarios } }}",
         "options": {}
       },
-      "id": "0b8b5aa8-3b08-4dbf-b326-bc6ef315462e",
+      "id": "71b24307-6308-4c23-a836-6077aeacab72",
       "name": "Respond - Aprobación procesada",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        -224,
-        512
+        3872,
+        1136
       ]
     },
     {
       "parameters": {
-        "resource": "sheet",
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "REEMPLAZAR_CON_ID_DE_GOOGLE_SHEET",
-          "mode": "id"
+          "value": "1KP-NOu4W8dmHXH5JRIKLjrrRuAeAGSaGarxyQC8NurQ",
+          "mode": "list",
+          "cachedResultName": "Megactivo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KP-NOu4W8dmHXH5JRIKLjrrRuAeAGSaGarxyQC8NurQ/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
-          "mode": "gid"
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KP-NOu4W8dmHXH5JRIKLjrrRuAeAGSaGarxyQC8NurQ/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "content_id": "={{ $json.content_id }}",
-            "estado": "rechazado / requiere ajustes",
-            "comentarios": "={{ $json.comentarios }}"
+            "content_id": "={{ String($json.content_id) }}",
+            "estado": "rechazado",
+            "comentarios ": "={{ $json.comentarios }}"
           },
           "matchingColumns": [
             "content_id"
           ],
-          "schema": []
+          "schema": [
+            {
+              "id": "content_id",
+              "displayName": "content_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cliente",
+              "displayName": "cliente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "plataforma",
+              "displayName": "plataforma",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "formato_contenido",
+              "displayName": "formato_contenido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "formato_solicitado",
+              "displayName": "formato_solicitado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pilar_contenido",
+              "displayName": "pilar_contenido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "react_data_json",
+              "displayName": "react_data_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "caption_instagram",
+              "displayName": "caption_instagram",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "caption_linkedin",
+              "displayName": "caption_linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "necesita_foto",
+              "displayName": "necesita_foto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "prompt_imagen",
+              "displayName": "prompt_imagen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "hashtags",
+              "displayName": "hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "observaciones",
+              "displayName": "observaciones",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "fecha_publicacion_sugerida",
+              "displayName": "fecha_publicacion_sugerida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "hora_publicacion",
+              "displayName": "hora_publicacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "imagen_url",
+              "displayName": "imagen_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "comentarios ",
+              "displayName": "comentarios ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "react_data",
+              "displayName": "react_data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "headers",
+              "displayName": "headers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "params",
+              "displayName": "params",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "webhookUrl",
+              "displayName": "webhookUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "executionMode",
+              "displayName": "executionMode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
         },
         "options": {}
       },
-      "id": "v3-sheets-update-rechazado",
+      "id": "3b1f104f-d8d8-4ab7-a1c1-437a06e1e822",
       "name": "Google Sheets - Actualizar rechazo",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        -224,
-        640
+        3648,
+        1232
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "REEMPLAZAR",
-          "name": "Google Sheets OAuth2"
+          "id": "NjWl1jZ6iZUN51qG",
+          "name": "Google Sheets OAuth2 API"
         }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "={{ \"name contains '\" + $json.content_id + \"' and '1WM0IDDN9_45oQCth-EW1Ybh2pAA7pgBy' in parents and trashed=false\" }}",
+        "limit": 1,
+        "filter": {},
+        "options": {}
       },
-      "onError": "continueRegularOutput"
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2976,
+        1040
+      ],
+      "id": "567b2182-24cc-451d-a62c-4d988033e66e",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4vPMZHaCVkjcgOo4",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const aprobacionData = $items('SET - Datos aprobación')[0].json;\nconst driveResults = $input.all();\n\nlet imagen_url = '';\n\nif (driveResults && driveResults.length > 0 && driveResults[0].json && driveResults[0].json.id) {\n  const fileId = driveResults[0].json.id;\n  imagen_url = `https://drive.google.com/uc?export=view&id=${fileId}`;\n}\n\nreturn [{\n  json: {\n    accion: aprobacionData.accion,\n    content_id: aprobacionData.content_id,\n    calendar_event_id: aprobacionData.calendar_event_id,\n    calendar_provider: aprobacionData.calendar_provider,\n    comentarios: aprobacionData.comentarios,\n    imagen_url\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3200,
+        1040
+      ],
+      "id": "fcb91a4b-18a9-43cd-878a-5f54c1cf755b",
+      "name": "Code - process results"
     }
   ],
+  "pinData": {},
   "connections": {
     "Webhook - Generar contenido": {
       "main": [
@@ -649,17 +1269,6 @@
       "main": [
         [
           {
-            "node": "CODE - Imagen mock (placeholder)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "CODE - Imagen mock (placeholder)": {
-      "main": [
-        [
-          {
             "node": "Google Sheets - Guardar contenido",
             "type": "main",
             "index": 0
@@ -669,24 +1278,6 @@
     },
     "Google Sheets - Guardar contenido": {
       "main": [
-        [
-          {
-            "node": "IF - Calendar Provider",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF - Calendar Provider": {
-      "main": [
-        [
-          {
-            "node": "Microsoft Outlook - Crear evento",
-            "type": "main",
-            "index": 0
-          }
-        ],
         [
           {
             "node": "Google Calendar - Crear evento",
@@ -707,17 +1298,6 @@
         ]
       ]
     },
-    "Microsoft Outlook - Crear evento": {
-      "main": [
-        [
-          {
-            "node": "CODE - Resultado Microsoft Calendar",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "CODE - Resultado Google Calendar": {
       "main": [
         [
@@ -728,20 +1308,6 @@
           }
         ]
       ]
-    },
-    "CODE - Resultado Microsoft Calendar": {
-      "main": [
-        [
-          {
-            "node": "Respond - Generación completada",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Respond - Generación completada": {
-      "main": []
     },
     "Webhook - Aprobación React": {
       "main": [
@@ -769,7 +1335,7 @@
       "main": [
         [
           {
-            "node": "Google Sheets - Actualizar estado",
+            "node": "Search files and folders",
             "type": "main",
             "index": 0
           }
@@ -816,9 +1382,6 @@
         ]
       ]
     },
-    "Respond - Aprobación procesada": {
-      "main": []
-    },
     "Google Sheets - Actualizar rechazo": {
       "main": [
         [
@@ -829,24 +1392,56 @@
           }
         ]
       ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Code - process results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - process results": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Actualizar estado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "versionId": "8c80e401-1968-4811-845d-23309fd725c1",
+  "versionId": "c5416bc4-9e9a-4bcd-a5e5-1090244ea26e",
   "meta": {
+    "templateCredsSetupCompleted": true,
     "instanceId": "692be7fd843d80c115d5c4ac80e42a646dfb33be7fc32d2c64604daa67c3f03e"
   },
   "nodeGroups": [],
-  "id": "xjyCBtRea58iBOWs",
+  "id": "5YXN2pZU1EndW1sU",
   "tags": [
     {
+      "updatedAt": "2026-06-05T15:09:55.256Z",
+      "createdAt": "2026-06-05T15:09:55.256Z",
+      "id": "5iJOs7ybk86a1WFv",
       "name": "Megactivo"
     },
     {
+      "updatedAt": "2026-06-05T18:14:19.821Z",
+      "createdAt": "2026-06-05T18:14:19.821Z",
+      "id": "lN4QXvD99op07qBP",
       "name": "v3-merged"
     }
   ]
