@@ -1218,7 +1218,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const aprobacionData = $items('SET - Datos aprobación')[0].json;\nconst driveResults = $input.all();\n\nlet imagen_url = '';\n\nif (driveResults && driveResults.length > 0 && driveResults[0].json && driveResults[0].json.id) {\n  const fileId = driveResults[0].json.id;\n  imagen_url = `https://drive.google.com/uc?export=view&id=${fileId}`;\n}\n\nreturn [{\n  json: {\n    accion: aprobacionData.accion,\n    content_id: aprobacionData.content_id,\n    calendar_event_id: aprobacionData.calendar_event_id,\n    calendar_provider: aprobacionData.calendar_provider,\n    comentarios: aprobacionData.comentarios,\n    imagen_url\n  }\n}];"
+        "jsCode": "const aprobacionData = $items('SET - Datos aprobación')[0].json;\nconst driveResults = $input.all();\n\nlet imagen_url = '';\n\nif (driveResults && driveResults.length > 0 && driveResults[0].json && driveResults[0].json.id) {\n  const fileId = driveResults[0].json.id;\n  imagen_url = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;\n}\n\nreturn [{\n  json: {\n    accion: aprobacionData.accion,\n    content_id: aprobacionData.content_id,\n    calendar_event_id: aprobacionData.calendar_event_id,\n    calendar_provider: aprobacionData.calendar_provider,\n    comentarios: aprobacionData.comentarios,\n    imagen_url\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
