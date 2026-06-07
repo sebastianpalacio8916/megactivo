@@ -81,35 +81,6 @@ const SAMPLE = {
   },
 };
 
-function buildDemoResultado(formato, plataforma) {
-  const reactDataByFormato = {
-    post_estatico: {
-      hook: "¿Buscas mejorar tus habilidades?",
-      cuerpo: "Megactivo te ofrece herramientas y recursos para ayudarte en tu camino profesional. Nuestro enfoque es personalizado y práctico.",
-      cierre: "No te quedes atrás, únete a Megactivo hoy mismo.",
-      cta: "¿Qué esperas para empezar tu crecimiento?",
-      hashtags: ["#Megactivo", "#DesarrolloPersonal", "#CarreraProfesional"],
-      plataforma,
-    },
-    carrusel: SAMPLE.carrusel,
-    story: SAMPLE.story,
-    guion_reel: SAMPLE.reel,
-  };
-  return {
-    estado: "pendiente aprobacion",
-    cliente: "Megactivo",
-    plataforma,
-    formato_contenido: formato,
-    calendar_provider: "google",
-    copy: "Descubre el poder de Megactivo",
-    caption_linkedin: "Conoce los beneficios de Megactivo para tu carrera",
-    hashtags: ["#Megactivo", "#DesarrolloPersonal", "#CarreraProfesional"],
-    react_data: reactDataByFormato[formato] ?? reactDataByFormato.post_estatico,
-    calendar_event: { id: "fspieufgo2u63bajron396jat4" },
-    preview_png_url: "https://placehold.co/1024x1024/0F393B/6EC1E4?text=Megactivo",
-  };
-}
-
 function getValidReactData(reactData, formato) {
   const validators = {
     post_estatico: (d) => d && d.hook,
@@ -559,6 +530,16 @@ function App() {
       calendar_event_id: resultado.calendar_event?.id || "",
       calendar_provider: resultado.calendar_provider || formData.calendar_provider,
       comentarios: comentariosAprobacion,
+      cliente: resultado.cliente || "Megactivo",
+      plataforma: resultado.plataforma || formData.plataforma,
+      formato_contenido: resultado.formato_contenido || formData.formato_contenido,
+      pilar_contenido: resultado.pilar_contenido || "",
+      caption_instagram: resultado.caption_instagram || resultado.copy || "",
+      caption_linkedin: resultado.caption_linkedin || "",
+      hashtags: (resultado.hashtags || []).join(" "),
+      fecha_publicacion_sugerida: resultado.fecha_publicacion_sugerida || formData.fecha_publicacion,
+      hora_publicacion: formData.hora_publicacion,
+      observaciones: resultado.observaciones || "",
     };
 
     if (accion === "rechazar") {
@@ -752,24 +733,8 @@ function App() {
           {error && <div className="alert-error">{error}</div>}
 
           <div className="form-actions-row">
-            <button type="submit" disabled={loading}>
+            <button type="submit" disabled={loading || aprobacionResultado?.accion === "aprobar"}>
               {loading ? "Generando contenido..." : "Generar contenido"}
-            </button>
-            <button
-              type="button"
-              className="btn-demo"
-              onClick={() => {
-                setError("");
-                setAprobacionResultado(null);
-                setAprobacionError("");
-                setComentariosAprobacion("");
-                setShowTemplate(false);
-                const demoData = buildDemoResultado(formData.formato_contenido, formData.plataforma);
-                setResultado(demoData);
-                guardarEnHistorial(demoData, formData.formato_contenido, formData.plataforma);
-              }}
-            >
-              Modo Demo
             </button>
           </div>
         </form>
@@ -912,14 +877,20 @@ function App() {
                   <div className="template-preview-inner">
                     <ReactDataRenderer data={effectiveReactData} formato={formatoResultado} />
                   </div>
-                  {aprobacionResultado?.imagen_url && (
+                  {aprobacionResultado?.accion === "aprobar" && (
                     <div className="imagen-sugerida">
                       <h4>Imagen sugerida</h4>
-                      <img
-                        src={aprobacionResultado.imagen_url}
-                        alt="Imagen sugerida para la publicación"
-                        className="imagen-sugerida-img"
-                      />
+                      {aprobacionResultado.imagen_url ? (
+                        <img
+                          src={aprobacionResultado.imagen_url}
+                          alt="Imagen sugerida para la publicación"
+                          className="imagen-sugerida-img"
+                        />
+                      ) : (
+                        <p className="imagen-no-disponible">
+                          La imagen no está disponible. Verifica que se haya subido a Drive con el nombre del content_id antes de aprobar.
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>

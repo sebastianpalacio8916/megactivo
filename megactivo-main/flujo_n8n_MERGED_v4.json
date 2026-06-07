@@ -406,36 +406,7 @@
     },
     {
       "parameters": {
-        "calendar": {
-          "__rl": true,
-          "mode": "list",
-          "value": "primary"
-        },
-        "start": "={{ DateTime.fromISO(($json.fecha_publicacion_sugerida || $json.fecha_publicacion) + 'T' + ($json.hora_publicacion || '09:00') + ':00').toISO() }}",
-        "end": "={{ DateTime.fromISO(($json.fecha_publicacion_sugerida || $json.fecha_publicacion) + 'T' + ($json.hora_publicacion || '09:00') + ':00').plus({hours:1}).toISO() }}",
-        "additionalFields": {
-          "description": "={{ 'ID: ' + $json.content_id + '\\nCliente: ' + $json.cliente + '\\nPlataforma: ' + $json.plataforma + '\\nFormato: ' + $json.formato_contenido + '\\nPilar: ' + $json.pilar_contenido + '\\n\\nCaption IG:\\n' + $json.caption_instagram + '\\n\\nCaption LI:\\n' + $json.caption_linkedin + '\\n\\nHashtags: ' + (($json.hashtags || []).join(' ')) + '\\n\\nEstado: ' + $json.estado + ($json.observaciones ? '\\nObservaciones: ' + $json.observaciones : '') }}",
-          "summary": "={{ '[EMILIANO] ' + $json.plataforma + ' — ' + $json.formato_contenido + ' — ' + $json.pilar_contenido }}"
-        }
-      },
-      "id": "03dc9522-7316-4342-999b-f559edcb9087",
-      "name": "Google Calendar - Crear evento",
-      "type": "n8n-nodes-base.googleCalendar",
-      "typeVersion": 1.3,
-      "position": [
-        3424,
-        816
-      ],
-      "credentials": {
-        "googleCalendarOAuth2Api": {
-          "id": "tXrQHIMlqum9ftYB",
-          "name": "Google Calendar OAuth2 API"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const gen = $items('CODE - Parsear respuesta + React mapping')[0].json;\nreturn [{ json: { ...gen, calendar_event: $json, calendar_provider_final: 'google' } }];"
+        "jsCode": "const gen = $items('CODE - Parsear respuesta + React mapping')[0].json;\nreturn [{ json: { ...gen, calendar_event: null, calendar_provider_final: gen.calendar_provider || 'google' } }];"
       },
       "id": "7dee93b7-f1cc-4228-9ad1-006206b21a87",
       "name": "CODE - Resultado Google Calendar",
@@ -503,6 +474,46 @@
             {
               "name": "comentarios",
               "stringValue": "={{ $json.body.comentarios }}"
+            },
+            {
+              "name": "cliente",
+              "stringValue": "={{ $json.body.cliente }}"
+            },
+            {
+              "name": "plataforma",
+              "stringValue": "={{ $json.body.plataforma }}"
+            },
+            {
+              "name": "formato_contenido",
+              "stringValue": "={{ $json.body.formato_contenido }}"
+            },
+            {
+              "name": "pilar_contenido",
+              "stringValue": "={{ $json.body.pilar_contenido }}"
+            },
+            {
+              "name": "caption_instagram",
+              "stringValue": "={{ $json.body.caption_instagram }}"
+            },
+            {
+              "name": "caption_linkedin",
+              "stringValue": "={{ $json.body.caption_linkedin }}"
+            },
+            {
+              "name": "hashtags",
+              "stringValue": "={{ $json.body.hashtags }}"
+            },
+            {
+              "name": "fecha_publicacion_sugerida",
+              "stringValue": "={{ $json.body.fecha_publicacion_sugerida }}"
+            },
+            {
+              "name": "hora_publicacion",
+              "stringValue": "={{ $json.body.hora_publicacion }}"
+            },
+            {
+              "name": "observaciones",
+              "stringValue": "={{ $json.body.observaciones }}"
             }
           ]
         },
@@ -852,7 +863,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://example.com/mock-social-publish",
+        "url": "https://httpbin.org/post",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify({ status: 'published_mock', content_id: $json.content_id, calendar_event_id: $json.calendar_event_id, approved_at: $now.toISO() }) }}",
@@ -1218,7 +1229,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const aprobacionData = $items('SET - Datos aprobación')[0].json;\nconst driveResults = $input.all();\n\nlet imagen_url = '';\n\nif (driveResults && driveResults.length > 0 && driveResults[0].json && driveResults[0].json.id) {\n  const fileId = driveResults[0].json.id;\n  imagen_url = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;\n}\n\nreturn [{\n  json: {\n    accion: aprobacionData.accion,\n    content_id: aprobacionData.content_id,\n    calendar_event_id: aprobacionData.calendar_event_id,\n    calendar_provider: aprobacionData.calendar_provider,\n    comentarios: aprobacionData.comentarios,\n    imagen_url\n  }\n}];"
+        "jsCode": "const aprobacionData = $items('SET - Datos aprobación')[0].json;\nconst driveResults = $input.all();\n\nlet imagen_url = '';\n\nif (driveResults && driveResults.length > 0 && driveResults[0].json && driveResults[0].json.id) {\n  const fileId = driveResults[0].json.id;\n  imagen_url = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;\n}\n\nreturn [{\n  json: {\n    accion: aprobacionData.accion,\n    content_id: aprobacionData.content_id,\n    calendar_event_id: aprobacionData.calendar_event_id,\n    calendar_provider: aprobacionData.calendar_provider,\n    comentarios: aprobacionData.comentarios,\n    cliente: aprobacionData.cliente,\n    plataforma: aprobacionData.plataforma,\n    formato_contenido: aprobacionData.formato_contenido,\n    pilar_contenido: aprobacionData.pilar_contenido,\n    caption_instagram: aprobacionData.caption_instagram,\n    caption_linkedin: aprobacionData.caption_linkedin,\n    hashtags: aprobacionData.hashtags,\n    fecha_publicacion_sugerida: aprobacionData.fecha_publicacion_sugerida,\n    hora_publicacion: aprobacionData.hora_publicacion,\n    observaciones: aprobacionData.observaciones,\n    imagen_url\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1241,6 +1252,48 @@
       ],
       "id": "b7a0f6ab-bacd-425f-81f1-c16093287a06",
       "name": "Code - Adjuntar imagen a respuesta"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "mode": "list",
+          "value": "primary"
+        },
+        "start": "={{ DateTime.fromISO(($json.fecha_publicacion_sugerida || DateTime.now().toISODate()) + 'T' + ($json.hora_publicacion || '09:00') + ':00').toISO() }}",
+        "end": "={{ DateTime.fromISO(($json.fecha_publicacion_sugerida || DateTime.now().toISODate()) + 'T' + ($json.hora_publicacion || '09:00') + ':00').plus({hours:1}).toISO() }}",
+        "additionalFields": {
+          "description": "={{ 'ID: ' + $json.content_id + '\\nCliente: ' + $json.cliente + '\\nPlataforma: ' + $json.plataforma + '\\nFormato: ' + $json.formato_contenido + '\\nPilar: ' + $json.pilar_contenido + '\\n\\nCaption IG:\\n' + $json.caption_instagram + '\\n\\nCaption LI:\\n' + $json.caption_linkedin + '\\n\\nHashtags: ' + $json.hashtags + '\\n\\nEstado: aprobado' + ($json.observaciones ? '\\nObservaciones: ' + $json.observaciones : '') }}",
+          "summary": "={{ '[EMILIANO] ' + $json.plataforma + ' — ' + $json.formato_contenido + ' — ' + $json.pilar_contenido }}"
+        }
+      },
+      "id": "54c21026-13ed-473f-9209-44f75a31e5e2",
+      "name": "Google Calendar - Crear evento (aprobado)",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        3200,
+        1240
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "tXrQHIMlqum9ftYB",
+          "name": "Google Calendar OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const datos = $items('Code - process results')[0].json;\nconst evento = $json || {};\nconst eventId = evento.id || evento.Id || '';\nconst nota = eventId ? 'Evento creado con éxito' : 'No se pudo crear el evento de calendario';\nconst comentariosFinal = [datos.comentarios, nota].filter(Boolean).join(' | ');\n\nreturn [{\n  json: {\n    ...datos,\n    calendar_event_id: eventId || datos.calendar_event_id,\n    comentarios: comentariosFinal\n  }\n}];"
+      },
+      "id": "39390bb3-bef2-41f9-93b6-106b2a7c66db",
+      "name": "CODE - Nota evento creado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3424,
+        1240
+      ]
     }
   ],
   "pinData": {},
@@ -1290,17 +1343,6 @@
       ]
     },
     "Google Sheets - Guardar contenido": {
-      "main": [
-        [
-          {
-            "node": "Google Calendar - Crear evento",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Calendar - Crear evento": {
       "main": [
         [
           {
@@ -1421,7 +1463,7 @@
       "main": [
         [
           {
-            "node": "Google Sheets - Actualizar estado",
+            "node": "Google Calendar - Crear evento (aprobado)",
             "type": "main",
             "index": 0
           }
@@ -1438,6 +1480,28 @@
         [
           {
             "node": "Respond - Aprobación procesada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar - Crear evento (aprobado)": {
+      "main": [
+        [
+          {
+            "node": "CODE - Nota evento creado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CODE - Nota evento creado": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Actualizar estado",
             "type": "main",
             "index": 0
           }

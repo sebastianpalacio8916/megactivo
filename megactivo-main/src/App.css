@@ -794,23 +794,6 @@ button:disabled {
   width: auto;
 }
 
-.btn-demo {
-  flex-shrink: 0;
-  width: auto;
-  padding: 17px 28px;
-  margin-top: 0;
-  background: #ffffff;
-  color: var(--color-dark);
-  border: 2px solid var(--color-dark);
-}
-
-.btn-demo:hover {
-  background: var(--color-light);
-  color: var(--color-dark);
-  transform: none;
-  box-shadow: none;
-}
-
 /* ─── Template preview (shown after approval) ────────────────────────── */
 .template-preview {
   margin-top: 20px;
@@ -962,4 +945,14 @@ button:disabled {
   max-width: 400px;
   border-radius: 10px;
   border: 1px solid #e6e6e6;
+}
+
+.imagen-no-disponible {
+  background: #fff8e6;
+  color: #926c00;
+  border: 1px solid #ffe6a6;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  margin: 0;
 }
