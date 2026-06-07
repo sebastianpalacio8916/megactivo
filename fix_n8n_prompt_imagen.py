@@ -1,6 +1,6 @@
 import json
 
-path = r'd:\Artículos, Cursos y otros\Curso IA - EAFIT-ANDI\Hackathon_Andi-EAFIT\megactivo-main\megactivo-main\flujo_n8n_MERGED_v3.json'
+path = r'd:\Artículos, Cursos y otros\Curso IA - EAFIT-ANDI\Hackathon_Andi-EAFIT\megactivo-main\megactivo-main\flujo_n8n_MERGED_v4.json'
 
 NL = '\\n'  # literal backslash-n, matches the escaped newlines inside the prompt string
 

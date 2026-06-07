@@ -457,7 +457,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        3872,
+        3840,
         816
       ]
     },
@@ -876,14 +876,14 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        3424,
-        1232
+        3200,
+        1248
       ]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ { ok: true, accion: $items('SET - Datos aprobación')[0].json.accion, content_id: $items('SET - Datos aprobación')[0].json.content_id, estado: $json.estado || 'aprobado — publicacion simulada', calendar_event_id: $items('SET - Datos aprobación')[0].json.calendar_event_id, comentarios: $items('SET - Datos aprobación')[0].json.comentarios } }}",
+        "responseBody": "=={{ { ok: true, accion: $items('SET - Datos aprobación')[0].json.accion, content_id: $items('SET - Datos aprobación')[0].json.content_id, estado: $json.estado || 'aprobado — publicacion simulada', calendar_event_id: $items('SET - Datos aprobación')[0].json.calendar_event_id, comentarios: $items('SET - Datos aprobación')[0].json.comentarios, imagen_url: $json.imagen_url || '' } }}",
         "options": {}
       },
       "id": "71b24307-6308-4c23-a836-6077aeacab72",
@@ -891,8 +891,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        3872,
-        1136
+        4128,
+        1232
       ]
     },
     {
@@ -1182,8 +1182,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        3648,
-        1232
+        3664,
+        1248
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -1228,6 +1228,19 @@
       ],
       "id": "fcb91a4b-18a9-43cd-878a-5f54c1cf755b",
       "name": "Code - process results"
+    },
+    {
+      "parameters": {
+        "jsCode": "const datos = $items('Code - process results')[0].json;\nreturn [{ json: { ...$json, imagen_url: datos.imagen_url || '' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3856,
+        1040
+      ],
+      "id": "b7a0f6ab-bacd-425f-81f1-c16093287a06",
+      "name": "Code - Adjuntar imagen a respuesta"
     }
   ],
   "pinData": {},
@@ -1364,7 +1377,7 @@
       "main": [
         [
           {
-            "node": "Respond - Aprobación procesada",
+            "node": "Code - Adjuntar imagen a respuesta",
             "type": "main",
             "index": 0
           }
@@ -1414,6 +1427,22 @@
           }
         ]
       ]
+    },
+    "Respond - Aprobación procesada": {
+      "main": [
+        []
+      ]
+    },
+    "Code - Adjuntar imagen a respuesta": {
+      "main": [
+        [
+          {
+            "node": "Respond - Aprobación procesada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -1424,7 +1453,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "c5416bc4-9e9a-4bcd-a5e5-1090244ea26e",
+  "versionId": "469863be-c2b6-4877-91ef-e8c562c7a320",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "692be7fd843d80c115d5c4ac80e42a646dfb33be7fc32d2c64604daa67c3f03e"
