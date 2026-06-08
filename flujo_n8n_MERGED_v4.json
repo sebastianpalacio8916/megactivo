@@ -1298,7 +1298,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash-image:generateContent",
+        "url": "https://platform.higgsfield.ai/flux-pro/kontext/max/text-to-image",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
@@ -1312,7 +1312,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ contents: [ { parts: [ { text: $json.prompt_imagen } ] } ] }) }}",
+        "jsonBody": "={{ JSON.stringify({ prompt: $json.prompt_imagen, aspect_ratio: \"1:1\" }) }}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -1345,7 +1345,7 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        1392,
+        2016,
         -272
       ],
       "id": "a311d079-ca18-45b6-ba83-123550d8e858",
@@ -1356,20 +1356,6 @@
           "name": "Google Drive OAuth2 API"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsCode": "const response = $json;\nconst parts = (response.candidates && response.candidates[0] && response.candidates[0].content && response.candidates[0].content.parts) || [];\nconst imagePart = parts.find(p => p.inlineData || p.inline_data);\nconst inline = imagePart && (imagePart.inlineData || imagePart.inline_data);\n\nif (!inline || !inline.data) {\n  throw new Error('Gemini no devolvio una imagen: ' + JSON.stringify(response).slice(0, 500));\n}\n\nconst mimeType = inline.mimeType || inline.mime_type || 'image/png';\nconst buffer = Buffer.from(inline.data, 'base64');\n\nreturn [{\n  json: $('CODE - Parsear respuesta + React mapping').item.json,\n  binary: {\n    data: await this.helpers.prepareBinaryData(buffer, 'imagen.png', mimeType)\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1184,
-        -272
-      ],
-      "id": "f3f0a1f1-8f4f-4a8a-9f1a-7c5a6b2e9d10",
-      "name": "Code - Convertir imagen Gemini a binario",
-      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -1433,6 +1419,95 @@
           "name": "Google Drive OAuth2 API"
         }
       }
+    },
+    {
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 40,
+        "unit": "seconds"
+      },
+      "id": "h1ggsf1e-aaaa-4bbb-8ccc-100000000001",
+      "name": "Wait - Esperar generación Higgsfield",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://platform.higgsfield.ai/requests/{{ $('Generate an image').item.json.request_id }}/status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "h1ggsf1e-aaaa-4bbb-8ccc-100000000002",
+      "name": "HTTP - Higgsfield consultar estado",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1392,
+        -272
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "h1ggsf1e-cond-00000001"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "h1ggsf1e-aaaa-4bbb-8ccc-100000000003",
+      "name": "IF - Imagen lista (Higgsfield)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1600,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $json.images[0].url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          }
+        }
+      },
+      "id": "h1ggsf1e-aaaa-4bbb-8ccc-100000000004",
+      "name": "HTTP - Higgsfield descargar imagen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1808,
+        -272
+      ],
+      "onError": "continueErrorOutput"
     }
   ],
   "pinData": {},
@@ -1651,25 +1726,7 @@
       "main": [
         [
           {
-            "node": "Code - Convertir imagen Gemini a binario",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Google Drive - Listar imagenes existentes",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code - Convertir imagen Gemini a binario": {
-      "main": [
-        [
-          {
-            "node": "Upload file",
+            "node": "Wait - Esperar generación Higgsfield",
             "type": "main",
             "index": 0
           }
@@ -1710,6 +1767,71 @@
         [
           {
             "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait - Esperar generación Higgsfield": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Higgsfield consultar estado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Higgsfield consultar estado": {
+      "main": [
+        [
+          {
+            "node": "IF - Imagen lista (Higgsfield)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Drive - Listar imagenes existentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Imagen lista (Higgsfield)": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Higgsfield descargar imagen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Drive - Listar imagenes existentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Higgsfield descargar imagen": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Drive - Listar imagenes existentes",
             "type": "main",
             "index": 0
           }
