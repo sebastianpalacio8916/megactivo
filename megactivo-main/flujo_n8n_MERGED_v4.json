@@ -1,5 +1,5 @@
 {
-  "name": "Agente Emiliano - Megactivo v3 MERGED",
+  "name": "flujo_n8n_MERGED_v4",
   "nodes": [
     {
       "parameters": {
@@ -10,13 +10,13 @@
           "allowedOrigins": "*"
         }
       },
-      "id": "72d18a5d-5753-4100-a7f4-56ec536451e9",
+      "id": "c50b5800-4c30-4f8f-a34c-427ab28c21cd",
       "name": "Webhook - Generar contenido",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        2304,
-        816
+        0,
+        -176
       ],
       "webhookId": "b78e865a-e2f7-4513-86db-0ca07e35f58a"
     },
@@ -62,13 +62,13 @@
         "include": "none",
         "options": {}
       },
-      "id": "6ba4cb48-288b-4687-a26d-1b0acdf24155",
+      "id": "2d337c3d-8374-46c8-ac8a-6f80eec9ad10",
       "name": "SET - Entrada + Brand JSON",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        2528,
-        816
+        224,
+        -176
       ]
     },
     {
@@ -91,13 +91,13 @@
         "jsonBody": "={{ { \"model\": \"llama-3.3-70b-versatile\", \"temperature\": 0.65, \"response_format\": { \"type\": \"json_object\" }, \"messages\": [ { \"role\": \"system\", \"content\": \"Eres Emiliano, agente senior de contenido para Megactivo. Genera contenido para redes sociales usando el Brand JSON del usuario. Devuelve SOLO JSON valido, sin markdown, sin explicacion adicional.\\n\\nREGLAS:\\n- story y guion_reel: solo Instagram. LinkedIn: solo post_estatico o carrusel. Si el formato no es compatible, corrige al mas cercano.\\n\\nEl JSON debe tener EXACTAMENTE estos campos de primer nivel:\\nformato_contenido, pilar_contenido, caption_instagram, caption_linkedin, hashtags (array), necesita_foto (boolean), prompt_imagen, fecha_publicacion_sugerida, observaciones, react_data.\\n\\nINSTRUCCIONES PARA prompt_imagen:\\n- Describe una escena visual concreta y especifica relacionada con el contenido del post (evita cliches genericos como 'gente sonriendo en una oficina').\\n- Indica un estilo visual claro (fotografia profesional realista, ilustracion plana moderna, etc.), el que mejor se adapte al pilar_contenido y al sector (pymes, contabilidad, finanzas, productividad).\\n- Si el Brand JSON incluye colores de marca, menciona esos colores para mantener coherencia visual.\\n- NUNCA pidas texto, palabras, letras, numeros, logotipos ni tipografia dentro de la imagen: el copy va aparte en el caption.\\n- Manten un tono profesional y aspiracional. Se conciso pero descriptivo: 2 a 4 frases con detalles de composicion, iluminacion y ambiente.\\n\\nEl campo react_data debe tener la estructura EXACTA segun formato_contenido:\\n\\nSi post_estatico -> react_data={\\\"hook\\\":\\\"gancho impactante 1 frase\\\",\\\"cuerpo\\\":\\\"desarrollo 2-3 frases\\\",\\\"cierre\\\":\\\"reflexion o dato de cierre\\\",\\\"cta\\\":\\\"pregunta o llamada a la accion\\\",\\\"hashtags\\\":[\\\"#tag1\\\",\\\"#tag2\\\",\\\"#tag3\\\"],\\\"plataforma\\\":\\\"Instagram\\\"}\\n\\nSi carrusel -> react_data={\\\"slides\\\":[{\\\"tipo\\\":\\\"hook\\\",\\\"texto\\\":\\\"titulo impactante\\\"},{\\\"tipo\\\":\\\"valor\\\",\\\"titulo\\\":\\\"Titulo punto\\\",\\\"cuerpo\\\":\\\"Explicacion\\\"},{\\\"tipo\\\":\\\"valor\\\",\\\"titulo\\\":\\\"Titulo punto 2\\\",\\\"cuerpo\\\":\\\"Explicacion 2\\\"},{\\\"tipo\\\":\\\"remate\\\",\\\"texto\\\":\\\"Reflexion de cierre\\\"},{\\\"tipo\\\":\\\"cta\\\",\\\"texto\\\":\\\"CTA o pregunta\\\",\\\"marca\\\":\\\"Megactivo\\\"}]}\\n\\nSi story -> react_data={\\\"frames\\\":[{\\\"tipo\\\":\\\"problema\\\",\\\"texto\\\":\\\"Pregunta o dolor que resuena\\\",\\\"poll\\\":[\\\"Opcion A\\\",\\\"Opcion B\\\"]},{\\\"tipo\\\":\\\"solucion\\\",\\\"texto\\\":\\\"La solucion de Megactivo\\\",\\\"detalle\\\":\\\"Subtitulo o dato de credibilidad\\\"},{\\\"tipo\\\":\\\"cta\\\",\\\"texto\\\":\\\"Llamada a la accion concreta\\\",\\\"link\\\":\\\"megactivo.com\\\"}]}\\n\\nSi guion_reel -> react_data={\\\"gancho\\\":\\\"Frase gancho 0-3seg\\\",\\\"problema\\\":\\\"Descripcion del problema 3-8seg\\\",\\\"puntos\\\":[{\\\"titulo\\\":\\\"Punto 1\\\",\\\"overlay\\\":\\\"Texto en pantalla corto\\\",\\\"cuerpo\\\":\\\"Voz en off del punto 1\\\"},{\\\"titulo\\\":\\\"Punto 2\\\",\\\"overlay\\\":\\\"Texto en pantalla corto\\\",\\\"cuerpo\\\":\\\"Voz en off del punto 2\\\"}],\\\"cierre\\\":\\\"Reflexion de cierre\\\",\\\"cta\\\":\\\"CTA final del reel\\\",\\\"duracion\\\":\\\"60 seg\\\"}\" }, { \"role\": \"user\", \"content\": $json.cliente + \" | \" + $json.plataforma + \" | \" + $json.formato_contenido + \" | \" + $json.objetivo_post + \" | \" + $json.fecha_publicacion + \" | \" + $json.calendar_provider + \" | Brand: \" + JSON.stringify($json.brand_json) } ] } }}",
         "options": {}
       },
-      "id": "cdce4c06-68ed-45e1-a593-94ba3b2df13f",
+      "id": "92f4bb17-b4ff-4821-87b1-830ef29892ad",
       "name": "HTTP - Groq Llama 3.3 70B",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        2752,
-        816
+        432,
+        -176
       ],
       "credentials": {
         "httpBearerAuth": {
@@ -110,13 +110,13 @@
       "parameters": {
         "jsCode": "const raw = $json.choices?.[0]?.message?.content || '{}';\nlet ai;\ntry {\n  ai = JSON.parse(raw);\n} catch (e) {\n  ai = { error: 'Parse error', raw };\n}\n\nconst input = $items('SET - Entrada + Brand JSON')[0].json;\n\nconst compatibilidad = {\n  instagram: ['post_estatico', 'carrusel', 'story', 'guion_reel'],\n  linkedin:  ['post_estatico', 'carrusel'],\n  ambas:     ['post_estatico', 'carrusel'],\n};\n\nconst plataformaKey    = String(input.plataforma || 'Instagram').toLowerCase();\nconst formatoSolicitado = String(input.formato_contenido || 'post_estatico').toLowerCase();\nconst formatosValidos  = compatibilidad[plataformaKey] || compatibilidad.instagram;\nconst formatoFinal     = formatosValidos.includes(formatoSolicitado) ? formatoSolicitado : formatosValidos[0];\n\n// react_data: usa lo que generó el LLM, con fallback por formato\nlet react_data = ai.react_data;\nif (!react_data) {\n  const fmt = formatoFinal;\n  if (fmt === 'carrusel')    react_data = { slides: ai.slides || [] };\n  else if (fmt === 'story')  react_data = { frames: ai.frames || [] };\n  else if (fmt === 'guion_reel') react_data = { gancho: ai.hook || '', problema: ai.copy || '', puntos: ai.escenas || [], cierre: '', cta: '', duracion: '60 seg' };\n  else react_data = { hook: ai.hook || '', cuerpo: ai.copy || '', cierre: ai.observaciones || '', cta: (ai.caption_instagram || '').slice(0, 120), hashtags: ai.hashtags || [], plataforma: input.plataforma };\n}\n\nconst contentId = String(Date.now());\n\nreturn [{\n  json: {\n    content_id:               contentId,\n    cliente:                  'Megactivo',\n    plataforma:               input.plataforma,\n    formato_contenido:        formatoFinal,\n    formato_solicitado:       formatoSolicitado,\n    objetivo_post:            input.objetivo_post,\n    fecha_publicacion:        input.fecha_publicacion,\n    hora_publicacion:         input.hora_publicacion,\n    calendar_provider:        input.calendar_provider,\n    brand_json:               input.brand_json,\n    pilar_contenido:          ai.pilar_contenido || '',\n    react_data,\n    caption_instagram:        ai.caption_instagram || '',\n    caption_linkedin:         ai.caption_linkedin  || '',\n    necesita_foto:            Boolean(ai.necesita_foto),\n    prompt_imagen:            ai.prompt_imagen || '',\n    hashtags:                 ai.hashtags || [],\n    observaciones:            ai.observaciones || '',\n    fecha_publicacion_sugerida: ai.fecha_publicacion_sugerida || input.fecha_publicacion,\n    imagen_url:               '',\n    estado:                   'pendiente aprobacion'\n  }\n}];"
       },
-      "id": "7959eb5d-9afa-40ac-ba1b-9db90d87ed1c",
+      "id": "5713196e-a423-485d-a17d-e59b4886b277",
       "name": "CODE - Parsear respuesta + React mapping",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2976,
-        816
+        672,
+        -176
       ]
     },
     {
@@ -389,13 +389,13 @@
         },
         "options": {}
       },
-      "id": "8f163c04-306d-4e5e-b53e-59bb7c6b4524",
+      "id": "c0eca5b6-19c3-47fd-8923-62e442077bf0",
       "name": "Google Sheets - Guardar contenido",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        3200,
-        816
+        976,
+        -80
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -408,13 +408,13 @@
       "parameters": {
         "jsCode": "const gen = $items('CODE - Parsear respuesta + React mapping')[0].json;\nreturn [{ json: { ...gen, calendar_event: null, calendar_provider_final: gen.calendar_provider || 'google' } }];"
       },
-      "id": "7dee93b7-f1cc-4228-9ad1-006206b21a87",
+      "id": "b5346932-a32c-40c1-9acd-3d29c8023a0a",
       "name": "CODE - Resultado Google Calendar",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3648,
-        816
+        1200,
+        -80
       ]
     },
     {
@@ -423,13 +423,13 @@
         "responseBody": "={{ { ok: true, content_id: $json.content_id, estado: $json.estado, cliente: $json.cliente, plataforma: $json.plataforma, formato_contenido: $json.formato_contenido, pilar_contenido: $json.pilar_contenido, react_data: $json.react_data, caption_instagram: $json.caption_instagram, caption_linkedin: $json.caption_linkedin, hashtags: $json.hashtags, copy: $json.caption_instagram || $json.caption_linkedin || '', imagen_url: $json.imagen_url, preview_png_url: $json.imagen_url, observaciones: $json.observaciones, fecha_publicacion_sugerida: $json.fecha_publicacion_sugerida, calendar_provider: $json.calendar_provider_final, calendar_event: { id: ($json.calendar_event && ($json.calendar_event.id || $json.calendar_event.Id)) || '' } } }}",
         "options": {}
       },
-      "id": "b246ed68-5e03-448a-8ba7-b7d4ad8307ed",
+      "id": "52f8968f-d752-4ad9-9723-389e6cc3a3c3",
       "name": "Respond - Generación completada",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        3840,
-        816
+        1424,
+        -80
       ]
     },
     {
@@ -441,13 +441,13 @@
           "allowedOrigins": "*"
         }
       },
-      "id": "da2d2a30-5c8a-48cb-bcd9-5344826cdb9d",
+      "id": "617ea61c-914f-4438-b1be-62e997f284a6",
       "name": "Webhook - Aprobación React",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        2304,
-        1136
+        0,
+        240
       ],
       "webhookId": "2f245fd2-35b2-4b0b-a788-244a8aa63a81"
     },
@@ -520,13 +520,13 @@
         "include": "none",
         "options": {}
       },
-      "id": "aad1f876-f6ee-49ec-9104-1fac4ee8c54f",
+      "id": "db88d264-ece5-42ff-b4af-c3495bb2b8b2",
       "name": "SET - Datos aprobación",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        2528,
-        1136
+        224,
+        240
       ]
     },
     {
@@ -553,13 +553,13 @@
         },
         "options": {}
       },
-      "id": "418a3a33-d71a-41ed-85da-64094e37318c",
+      "id": "d6342e9a-dd0e-4b1f-b339-dbcf51497526",
       "name": "IF - ¿Aprobado?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2752,
-        1136
+        448,
+        240
       ]
     },
     {
@@ -845,13 +845,13 @@
         },
         "options": {}
       },
-      "id": "e7412f35-8577-4b38-b34f-a4c30f9a2ac3",
+      "id": "339a74f4-9903-4c57-b96a-ed469a256b74",
       "name": "Google Sheets - Actualizar estado",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        3424,
-        1040
+        1392,
+        144
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -869,26 +869,26 @@
         "jsonBody": "={{ JSON.stringify({ status: 'published_mock', content_id: $json.content_id, calendar_event_id: $json.calendar_event_id, approved_at: $now.toISO() }) }}",
         "options": {}
       },
-      "id": "0b5ed1cc-f697-4ca3-bd23-1f1bf01adb30",
+      "id": "1f14a1ee-1a0d-4f6d-912f-88e0ba819d17",
       "name": "HTTP - Publicar Meta/LinkedIn Mock",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [
-        3648,
-        1040
+        1584,
+        144
       ]
     },
     {
       "parameters": {
         "options": {}
       },
-      "id": "65b0edb5-2a08-40db-bfdc-28d4ddc4651f",
+      "id": "ef6cd106-3444-4b18-9417-54488ac06a3b",
       "name": "SET - Rechazado/Requiere ajustes",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3,
       "position": [
-        3200,
-        1248
+        672,
+        336
       ]
     },
     {
@@ -897,13 +897,13 @@
         "responseBody": "={{ { ok: true, accion: $items('SET - Datos aprobación')[0].json.accion, content_id: $items('SET - Datos aprobación')[0].json.content_id, estado: $json.estado || 'aprobado — publicacion simulada', calendar_event_id: $items('SET - Datos aprobación')[0].json.calendar_event_id, comentarios: $items('SET - Datos aprobación')[0].json.comentarios, imagen_url: $json.imagen_url || '' } }}",
         "options": {}
       },
-      "id": "71b24307-6308-4c23-a836-6077aeacab72",
+      "id": "f2209032-d618-416b-83d7-397c56c5b281",
       "name": "Respond - Aprobación procesada",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
       "position": [
-        4128,
-        1232
+        2016,
+        240
       ]
     },
     {
@@ -1188,13 +1188,13 @@
         },
         "options": {}
       },
-      "id": "3b1f104f-d8d8-4ab7-a1c1-437a06e1e822",
+      "id": "9cddb1cd-8b15-4181-810c-f8f4d73e0b2a",
       "name": "Google Sheets - Actualizar rechazo",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        3664,
-        1248
+        1776,
+        336
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -1215,10 +1215,10 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        2976,
-        1040
+        672,
+        144
       ],
-      "id": "567b2182-24cc-451d-a62c-4d988033e66e",
+      "id": "6ab53fb5-d04f-4fc1-8352-2f87abd908e5",
       "name": "Search files and folders",
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -1234,10 +1234,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3200,
-        1040
+        864,
+        144
       ],
-      "id": "fcb91a4b-18a9-43cd-878a-5f54c1cf755b",
+      "id": "83062530-da51-4e88-910d-7c7e41b9ef36",
       "name": "Code - process results"
     },
     {
@@ -1247,10 +1247,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3856,
-        1040
+        1760,
+        144
       ],
-      "id": "b7a0f6ab-bacd-425f-81f1-c16093287a06",
+      "id": "e312ac3b-0427-4715-baa8-05df53ecae8b",
       "name": "Code - Adjuntar imagen a respuesta"
     },
     {
@@ -1267,13 +1267,13 @@
           "summary": "={{ '[EMILIANO] ' + $json.plataforma + ' — ' + $json.formato_contenido + ' — ' + $json.pilar_contenido }}"
         }
       },
-      "id": "54c21026-13ed-473f-9209-44f75a31e5e2",
+      "id": "bce97365-cea4-4977-a1d4-c3fdb5efdd0c",
       "name": "Google Calendar - Crear evento (aprobado)",
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1.3,
       "position": [
-        3200,
-        1240
+        1056,
+        144
       ],
       "credentials": {
         "googleCalendarOAuth2Api": {
@@ -1286,14 +1286,153 @@
       "parameters": {
         "jsCode": "const datos = $items('Code - process results')[0].json;\nconst evento = $json || {};\nconst eventId = evento.id || evento.Id || '';\nconst nota = eventId ? 'Evento creado con éxito' : 'No se pudo crear el evento de calendario';\nconst comentariosFinal = [datos.comentarios, nota].filter(Boolean).join(' | ');\n\nreturn [{\n  json: {\n    ...datos,\n    calendar_event_id: eventId || datos.calendar_event_id,\n    comentarios: comentariosFinal\n  }\n}];"
       },
-      "id": "39390bb3-bef2-41f9-93b6-106b2a7c66db",
+      "id": "eed33e6f-c285-40fb-840c-160fffd56952",
       "name": "CODE - Nota evento creado",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3424,
-        1240
+        1232,
+        144
       ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash-image:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ contents: [ { parts: [ { text: $json.prompt_imagen } ] } ] }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        976,
+        -272
+      ],
+      "id": "15ce903e-17fa-420c-8b86-de028ea6f614",
+      "name": "Generate an image",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('CODE - Parsear respuesta + React mapping').item.json.content_id }}.png",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1WM0IDDN9_45oQCth-EW1Ybh2pAA7pgBy",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1392,
+        -272
+      ],
+      "id": "a311d079-ca18-45b6-ba83-123550d8e858",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4vPMZHaCVkjcgOo4",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $json;\nconst parts = (response.candidates && response.candidates[0] && response.candidates[0].content && response.candidates[0].content.parts) || [];\nconst imagePart = parts.find(p => p.inlineData || p.inline_data);\nconst inline = imagePart && (imagePart.inlineData || imagePart.inline_data);\n\nif (!inline || !inline.data) {\n  throw new Error('Gemini no devolvio una imagen: ' + JSON.stringify(response).slice(0, 500));\n}\n\nconst mimeType = inline.mimeType || inline.mime_type || 'image/png';\nconst buffer = Buffer.from(inline.data, 'base64');\n\nreturn [{\n  json: $('CODE - Parsear respuesta + React mapping').item.json,\n  binary: {\n    data: await this.helpers.prepareBinaryData(buffer, 'imagen.png', mimeType)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        -272
+      ],
+      "id": "f3f0a1f1-8f4f-4a8a-9f1a-7c5a6b2e9d10",
+      "name": "Code - Convertir imagen Gemini a binario",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "={{ \"mimeType contains 'image/' and '1WM0IDDN9_45oQCth-EW1Ybh2pAA7pgBy' in parents and trashed=false\" }}",
+        "limit": 50,
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        976,
+        -80
+      ],
+      "id": "a1b2c3d4-1111-4aaa-9bbb-100000000001",
+      "name": "Google Drive - Listar imagenes existentes",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4vPMZHaCVkjcgOo4",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const files = $input.all();\nif (!files.length) {\n  return [];\n}\nconst random = files[Math.floor(Math.random() * files.length)];\nreturn [{ json: { fileId: random.json.id } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        -80
+      ],
+      "id": "a1b2c3d4-2222-4aaa-9bbb-100000000002",
+      "name": "Code - Elegir imagen aleatoria"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.fileId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1392,
+        -80
+      ],
+      "id": "a1b2c3d4-3333-4aaa-9bbb-100000000003",
+      "name": "Google Drive - Descargar imagen aleatoria",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4vPMZHaCVkjcgOo4",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1334,6 +1473,11 @@
     "CODE - Parsear respuesta + React mapping": {
       "main": [
         [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          },
           {
             "node": "Google Sheets - Guardar contenido",
             "type": "main",
@@ -1470,11 +1614,6 @@
         ]
       ]
     },
-    "Respond - Aprobación procesada": {
-      "main": [
-        []
-      ]
-    },
     "Code - Adjuntar imagen a respuesta": {
       "main": [
         [
@@ -1507,23 +1646,89 @@
           }
         ]
       ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Code - Convertir imagen Gemini a binario",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Drive - Listar imagenes existentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Convertir imagen Gemini a binario": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Drive - Listar imagenes existentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive - Listar imagenes existentes": {
+      "main": [
+        [
+          {
+            "node": "Code - Elegir imagen aleatoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Elegir imagen aleatoria": {
+      "main": [
+        [
+          {
+            "node": "Google Drive - Descargar imagen aleatoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive - Descargar imagen aleatoria": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate",
-    "timeSavedMode": "fixed",
-    "callerPolicy": "workflowsFromSameOwner",
-    "availableInMCP": false
+    "binaryMode": "separate"
   },
-  "versionId": "469863be-c2b6-4877-91ef-e8c562c7a320",
+  "versionId": "204889fd-e031-4b49-9182-1dbfca8c0799",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "692be7fd843d80c115d5c4ac80e42a646dfb33be7fc32d2c64604daa67c3f03e"
   },
   "nodeGroups": [],
-  "id": "5YXN2pZU1EndW1sU",
+  "id": "hP15WaqnmNrf29t4",
   "tags": [
     {
       "updatedAt": "2026-06-05T15:09:55.256Z",
